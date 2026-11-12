@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#22445a">
+ <meta name="description" content="رسوم متحركة تُظهر كيف تنطق الشفتان واللسان المقاطع العربية.">
+ <title>مكتبة الرسوم المتحركة — مع حمادة</title>
+ <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+ <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16.png">
+ <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+ <link rel="stylesheet" href="syllables.css">
+ <link rel="stylesheet" href="animations.css">
+ <script type="module" src="animations.js"></script>
+</head>
+<body>
+ <a class="skip-link" href="#main">انتقل إلى المحتوى</a>
+ <header class="app-header">
+  <a class="brand" href="syllable.html" aria-label="المقاطع — الرئيسية"><img src="../assets/logo.webp" width="44" height="44" alt=""><span>المقاطع <small>مع حمادة</small></span></a>
+  <nav aria-label="التنقل"><a class="icon" href="syllable.html" aria-label="الرئيسية" title="الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3Z"/><path d="M9 21v-8h6v8"/></svg></a></nav>
+ </header>
+ <main id="main" tabindex="-1" class="library">
+  <h1 class="library-title">مكتبة الرسوم المتحركة</h1>
+  <div id="library-list" class="library-list"></div>
+ </main>
+ <dialog id="player" class="player" aria-labelledby="player-title">
+  <div class="player-head"><h2 id="player-title"></h2><button type="button" class="icon" id="player-close" aria-label="إغلاق" title="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+  <video id="player-video" playsinline preload="auto"></video>
+  <div class="player-controls">
+   <div class="segments" role="group" aria-label="زاوية العرض">
+    <button type="button" data-view="front" aria-pressed="true" aria-label="من الأمام" title="من الأمام"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/></svg></button>
+    <button type="button" data-view="side" aria-pressed="false" aria-label="من الجانب" title="من الجانب"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3a8 8 0 0 0-8 8l-3 3 2 1v3a2 2 0 0 0 2 2h3v2"/><path d="M15 3a7 7 0 0 1 4 12v6"/><path d="M11 10h.01"/></svg></button>
+   </div>
+   <button type="button" class="icon" id="player-replay" aria-label="أعد التشغيل" title="أعد التشغيل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg></button>
+  </div>
+  <p id="player-status" class="status" role="status" aria-live="polite"></p>
+ </dialog>
+</body>
+</html>

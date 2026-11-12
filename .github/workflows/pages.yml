@@ -1,0 +1,48 @@
+name: Publish the articulation apps
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Rebuild the words app's offline release list
+        run: node words/scripts/build-pwa.cjs
+      - name: Check the syllable data
+        run: node syllable/tests/model.mjs
+      - name: Stage the site without tests and build scripts
+        run: |
+          mkdir -p _site
+          git ls-files -z | grep -zvE '(^|/)(tests|scripts|\.github)/|^(AGENTS|README)\.md$|\.gitignore$' | xargs -0 -I{} cp --parents {} _site/
+          cp --parents words/assets/release.js words/assets/release-worker.js words/sounds/README.txt _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,88 +1,103 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
- <meta charset="utf-8">
- <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
- <meta name="theme-color" content="#22445a">
- <meta name="description" content="تدريب المقاطع العربية واختبارات الاستماع والإنتاج مع حمادة.">
- <title>المقاطع — مع حمادة</title>
- <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
- <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16.png">
- <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
- <link rel="stylesheet" href="syllables.css">
- <script type="module" src="syllables.js"></script>
-</head>
-<body>
- <a class="skip-link" href="#main">انتقل إلى المحتوى</a>
- <header class="app-header">
-  <a class="brand" href="syllable.html" aria-label="المقاطع — الرئيسية"><img src="../assets/logo.webp" width="44" height="44" alt=""><span>المقاطع <small>مع حمادة</small></span></a>
-  <nav aria-label="التنقل">
-   <button id="rewards-button" class="icon" data-icon="star" aria-label="نجوم التشجيع" title="نجوم التشجيع" hidden></button>
-   <button id="history-button" class="icon" data-icon="chart" aria-label="نتائج الاختبارات" title="نتائج الاختبارات"></button>
-   <button id="home-button" class="icon" data-icon="home" aria-label="الرئيسية" title="الرئيسية"></button>
-  </nav>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#22445a">
+<meta name="description" content="قطار المقاطع: يتدرّب فيه الطفل على نطق المقاطع العربية مع حمادة."><title>المقاطع — مع حمادة</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/styles.css"><link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css"><link rel="stylesheet" href="assets/train.css">
+<script src="assets/data.js" defer></script><script src="assets/plan.js" defer></script><script src="assets/report.js" defer></script><script src="assets/audio.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" data-app="articulation-syllables" defer></script>
+<script type="module" src="assets/app.js"></script>
+</head><body>
+<div id="home" class="home">
+ <header class="topbar">
+  <div class="brand"><img src="../assets/logo.webp" width="44" height="44" alt=""><strong>المقاطع</strong></div>
+  <div class="tools">
+   <button id="report-open" class="icon" type="button" aria-label="تقرير الطفل" title="تقرير الطفل" aria-haspopup="dialog" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16v-5m5 5V6m5 10v-8"/></svg></button>
+   <button id="goals-open" class="icon" type="button" aria-label="الأهداف البعيدة والقريبة" title="الأهداف البعيدة والقريبة" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></button>
+   <button id="account" class="account" type="button" aria-haspopup="dialog"><span id="account-name">الحسابات</span></button>
+  </div>
  </header>
- <p id="error" class="error" role="alert" hidden></p>
- <main id="main" tabindex="-1">
-  <section id="home-view" class="view home-view" aria-labelledby="home-title">
-   <div class="home-intro"><img src="../assets/logo.webp" width="112" height="112" alt=""><h1 id="home-title">نلعب بالمقاطع</h1><p>نستمع، نطابق، وننطق.</p></div>
-   <div class="activity-grid">
-    <button class="activity-card" data-open="practice"><span data-icon="play" aria-hidden="true"></span><strong>تدريب</strong></button>
-    <a class="activity-card" href="matching.html"><span data-icon="match" aria-hidden="true"></span><strong>مطابقة</strong></a>
-    <button class="activity-card" data-open="listening"><span data-icon="ear" aria-hidden="true"></span><strong>اختبار الاستماع</strong></button>
-    <button class="activity-card" data-open="production"><span data-icon="speak" aria-hidden="true"></span><strong>اختبار الإنتاج</strong></button>
-   </div>
-   <button id="resume-button" class="resume-card" hidden><span data-icon="resume" aria-hidden="true"></span><span id="resume-label">متابعة الاختبار المحفوظ</span></button>
-  </section>
-  <section id="activity-view" class="view activity-view" hidden aria-label="مساحة العمل">
-   <div class="activity-toolbar">
-    <div class="activity-meta"><h1 id="activity-title"></h1><span id="activity-meta"></span></div>
-    <div class="toolbar-controls">
-     <button id="settings-button" class="icon" data-icon="settings" aria-label="اختيار الحروف ونوع المقطع" title="اختيار الحروف ونوع المقطع"></button>
-     <button id="pause-button" class="icon" data-icon="pause" aria-label="إيقاف الاختبار مؤقتاً" title="إيقاف مؤقت" hidden></button>
-     <button id="restart-button" class="icon" data-icon="restart" aria-label="جولة مطابقة جديدة" title="جولة جديدة" hidden></button>
-    </div>
-   </div>
-   <div id="assessment-status" class="assessment-status" hidden><progress id="test-progress" value="0" max="1" aria-label="تقدم الاختبار"></progress><span id="trial-count"></span></div>
-   <div id="practice-filters" class="practice-filters" hidden><div id="practice-modes" class="segments" role="group" aria-label="نوع المقطع"></div><div id="vowel-filters" class="segments" role="group" aria-label="الحركة الأولى"></div></div>
-   <p id="audio-status" class="status" role="status" aria-live="polite"></p>
-   <div id="practice-grid" class="practice-grid" hidden></div>
-   <button id="listening-cue" type="button" class="syllable-card listening-cue" aria-label="استمع إلى مقطع السؤال" hidden><span data-icon="ear" aria-hidden="true"></span><span>استمع</span></button>
-   <div id="choice-grid" class="choice-grid" role="group" aria-label="اختر المقطع المسموع" hidden></div>
-   <div id="production-stage" class="production-stage" hidden></div>
-   <div id="matching-board" class="matching-board" hidden>
-    <div class="matching-column"><h2>اختر المقطع</h2><div id="matching-sources" class="matching-list" role="group" aria-label="المقاطع المكشوفة"></div></div>
-    <div class="matching-column"><h2>استمع وطابق</h2><div id="matching-targets" class="matching-list" role="group" aria-label="المقاطع المغطاة"></div></div>
-   </div>
-   <div id="production-grades" class="grade-controls" role="group" aria-label="تسجيل إنتاج الطفل" hidden>
-    <button class="grade score-0" data-grade="0" aria-label="تقدير إنتاج الطفل 0%" title="تقدير إنتاج الطفل 0%"><span data-icon="cross" aria-hidden="true"></span><bdi dir="ltr">0%</bdi></button>
-    <button class="grade score-20" data-grade="20" aria-label="تقدير إنتاج الطفل 20%" title="تقدير إنتاج الطفل 20%"><span data-icon="speak" aria-hidden="true"></span><bdi dir="ltr">20%</bdi></button>
-    <button class="grade score-40" data-grade="40" aria-label="تقدير إنتاج الطفل 40%" title="تقدير إنتاج الطفل 40%"><span data-icon="speak" aria-hidden="true"></span><bdi dir="ltr">40%</bdi></button>
-    <button class="grade score-60" data-grade="60" aria-label="تقدير إنتاج الطفل 60%" title="تقدير إنتاج الطفل 60%"><span data-icon="speak" aria-hidden="true"></span><bdi dir="ltr">60%</bdi></button>
-    <button class="grade score-80" data-grade="80" aria-label="تقدير إنتاج الطفل 80%" title="تقدير إنتاج الطفل 80%"><span data-icon="speak" aria-hidden="true"></span><bdi dir="ltr">80%</bdi></button>
-    <button class="grade score-100" data-grade="100" aria-label="تقدير إنتاج الطفل 100%" title="تقدير إنتاج الطفل 100%"><span data-icon="check" aria-hidden="true"></span><bdi dir="ltr">100%</bdi></button>
-   </div>
-   <div class="activity-bottom">
-    <div id="pagination" class="pagination" hidden><button id="previous-page" class="icon" data-icon="previous" aria-label="المقاطع السابقة"></button><span id="page-count"></span><button id="next-page" class="icon" data-icon="next" aria-label="المقاطع التالية"></button></div>
-    <span id="matching-count" hidden></span>
-    <button id="skip-button" class="icon" data-icon="skip" aria-label="تخطي — لم يُقيّم" title="تخطي — لم يُقيّم" hidden></button>
-    <span id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></span>
-   </div>
-  </section>
-  <section id="paused-view" class="view paused-view" hidden><div class="panel pause-card"><span data-icon="pause" aria-hidden="true"></span><h1>تم حفظ الاختبار</h1><p id="paused-summary"></p><div class="pause-actions"><button id="continue-button" class="icon" data-icon="resume" aria-label="متابعة الاختبار" title="متابعة"></button><button id="finish-button" class="icon" data-icon="flag" aria-label="إنهاء بتقرير جزئي" title="تقرير جزئي"></button><button id="paused-home" class="icon" data-icon="home" aria-label="العودة للرئيسية" title="الرئيسية"></button></div></div></section>
-  <section id="results-view" class="view results-view" hidden aria-labelledby="results-title"><div class="result-heading"><h1 id="results-title">نتائج الاختبار</h1><button id="print-button" class="icon" data-icon="print" aria-label="طباعة أو حفظ PDF" title="طباعة أو حفظ PDF"></button></div><div id="result-content"></div><button id="repeat-button" class="primary">اختبار جديد</button></section>
+ <main class="home-main">
+  <section class="hero"><img src="../assets/logo.webp" alt=""><h1>المقاطع</h1><p>قطار المقاطع</p></section>
+  <nav class="actions" aria-label="الأنشطة">
+   <button id="play" class="action" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><span>العب</span></button>
+  </nav>
+  <button id="test-switch" class="switch" type="button" role="switch" aria-checked="false" aria-label="وضع المعالج"><span class="switch-text">وضع المعالج</span><span class="switch-track"><span></span></span></button>
+  <nav id="therapist-tools" class="therapist-tools" aria-label="أدوات المعالج" hidden>
+   <a href="classic.html#practice" title="تدريب" aria-label="تدريب"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 12 8-12 8Z"/></svg><span>تدريب</span></a>
+   <a href="matching.html" title="مطابقة" aria-label="مطابقة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="7" height="15" rx="2"/><rect x="15" y="4" width="7" height="15" rx="2"/><path d="m11 9 2 3-2 3"/></svg><span>مطابقة</span></a>
+   <a href="classic.html#listening" title="اختبار الاستماع" aria-label="اختبار الاستماع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10a6 6 0 1 1 12 0c0 4-4 4-4 8a4 4 0 0 1-8 0M10 10a2 2 0 0 1 4 0c0 2-4 2-4 5"/></svg><span>الاستماع</span></a>
+   <a href="classic.html#production" title="اختبار الإنتاج" aria-label="اختبار الإنتاج"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11c0 5-4 8-8 8H8l-5 3 1-6a8 8 0 1 1 16-5Z"/><path d="M8 8h1m3 0h1m3 0h1"/></svg><span>الإنتاج</span></a>
+   <a href="classic.html#results" title="نتائج الاختبارات" aria-label="نتائج الاختبارات"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v17h17M8 15l5-6 4 3 4-7"/></svg><span>النتائج</span></a>
+   <a href="animations.html" title="مكتبة الرسوم المتحركة" aria-label="مكتبة الرسوم المتحركة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3Z"/></svg><span>الرسوم</span></a>
+  </nav>
  </main>
- <footer id="contact-footer" class="contact-footer" dir="ltr"><span>SPEECH AND LANGUAGE PATHOLOGY</span><strong>Ahmad Ghanem</strong><span>Latakia - Syria</span><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></footer>
- <dialog id="setup-dialog" aria-labelledby="setup-title"><form id="setup-form">
-  <div class="dialog-heading"><h2 id="setup-title">إعداد التدريب</h2><button type="button" class="icon" data-icon="close" data-close aria-label="إغلاق"></button></div>
-  <fieldset><legend>الحروف <span class="muted">حتى ٣</span></legend><div id="letter-picker" class="letter-picker"></div></fieldset>
-  <fieldset><legend>نوع المقطع</legend><div id="setup-modes" class="segments" role="group" aria-label="نوع المقطع"></div></fieldset>
-  <p id="setup-note" class="setup-note"></p>
-  <button id="start-button" class="primary" type="submit"><span data-icon="play" aria-hidden="true"></span><span>ابدأ</span></button>
- </form></dialog>
- <dialog id="history-dialog" aria-labelledby="history-title"><div class="dialog-heading"><h2 id="history-title">نتائج الاختبارات</h2><button type="button" class="icon" data-icon="close" data-close aria-label="إغلاق"></button></div><p class="muted">محفوظة على هذا الجهاز.</p><div id="history-list"></div></dialog>
- <dialog id="rewards-dialog" aria-labelledby="rewards-title"><div class="dialog-heading"><h2 id="rewards-title">نجوم التشجيع</h2><button type="button" class="icon" data-icon="close" data-close aria-label="إغلاق"></button></div><div class="reward-controls"><button id="reward-target" class="secondary">٥ نجوم</button><button id="clear-rewards" class="icon" data-icon="restart" aria-label="إعادة النجوم"></button></div><div id="reward-stars" class="reward-stars"></div><p id="reward-message" class="status" aria-live="polite"></p></dialog>
- <audio id="syllable-audio" preload="none"></audio>
- <noscript><p>يرجى تفعيل JavaScript لعرض المقاطع.</p></noscript>
-</body>
-</html>
+ <footer class="contact"><p>SPEECH AND LANGUAGE PATHOLOGY</p><p><strong>Ahmad Ghanem</strong></p><p>Latakia - Syria</p><p><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></p></footer>
+</div>
+
+<section id="letters" class="letters" hidden aria-label="اختر صوتًا">
+ <button id="letters-back" class="hud-button" type="button" aria-label="الرئيسية" title="الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/></svg></button>
+ <div class="wood-board"><div id="letter-tiles" class="letter-tiles"></div></div>
+</section>
+
+<section id="stage" class="stage" hidden aria-label="قطار المقاطع">
+ <div id="world" class="world"></div>
+ <div class="hud">
+  <button id="leave" class="hud-button" type="button" aria-label="الرئيسية" title="الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/></svg></button>
+  <div id="stations" class="stations" role="img" aria-label=""></div>
+  <button id="grade-open" class="hud-button grade-open" type="button" aria-label="تقييم نطق الطفل" title="تقييم نطق الطفل" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></button>
+ </div>
+ <button id="go" class="round go train-go" type="button" aria-label="انطلق إلى المحطة التالية" title="انطلق" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+ <p id="loading" class="loading" role="status">جارٍ التجهيز…</p>
+
+ <div id="grading" class="pack grading" role="dialog" aria-modal="true" aria-labelledby="grading-title" hidden>
+  <div class="grading-card"><div class="grading-head"><h2 id="grading-title">تقييم النطق</h2><button id="grading-close" class="round pack-x" type="button" aria-label="إغلاق" title="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="grading-rows" class="grading-rows"></div></div>
+ </div>
+
+ <div id="viewer" class="viewer" role="dialog" aria-modal="true" aria-label="كيف أنطق المقطع" hidden>
+  <div id="viewer-panes" class="viewer-panes"></div>
+  <button id="viewer-close" class="hud-button viewer-close" type="button" aria-label="رجوع إلى القطار" title="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  <div class="viewer-modes" role="group" aria-label="طريقة العرض">
+   <button type="button" data-view="front" aria-label="من الأمام" title="من الأمام"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/></svg></button>
+   <button type="button" data-view="side" aria-label="من الجانب" title="من الجانب"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3a8 8 0 0 0-8 8l-3 3 2 1v3a2 2 0 0 0 2 2h3v2"/><path d="M15 3a7 7 0 0 1 4 12v6"/><path d="M11 10h.01"/></svg></button>
+   <button type="button" data-view="both" aria-label="الأمام والجانب معًا" title="معًا"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="9" height="14" rx="2"/><rect x="13" y="5" width="9" height="14" rx="2"/></svg></button>
+   <button type="button" data-view="camera" aria-label="الكاميرا بجانب الرسم" title="الكاميرا"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v12H4Z"/><circle cx="12" cy="13" r="4"/></svg></button>
+   <button type="button" id="viewer-replay" aria-label="أعد التشغيل" title="أعد التشغيل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg></button>
+  </div>
+  <p id="viewer-status" class="viewer-status" role="status"></p>
+ </div>
+
+ <div id="done" class="panel-layer party" role="dialog" aria-modal="true" aria-labelledby="done-title" hidden>
+  <div class="panel score-panel"><h2 id="done-title">أحسنت!</h2><div id="done-result"></div><div class="row"><button id="done-again" class="primary" type="button">العب من جديد</button><button id="done-home" class="secondary" type="button">الرئيسية</button></div></div>
+ </div>
+ <button id="turn" class="turn" type="button" aria-label="أدر الهاتف لترى القطار كاملًا">
+  <svg viewBox="0 0 240 240" aria-hidden="true"><path class="turn-arc" d="M186 44A100 100 0 0 1 216 96"/><path class="turn-head" d="M204 92l13 13 9-16z"/><g class="turn-phone"><rect x="75" y="40" width="90" height="160" rx="15" fill="#f8ecd2"/><rect x="84" y="54" width="72" height="132" rx="5" fill="#d8ecf0" stroke-width="2.5"/><g transform="rotate(-90 120 120)" stroke="none"><rect x="70" y="112" width="100" height="26" rx="8" fill="#e0b25c"/><circle cx="90" cy="142" r="8" fill="#5a3d2b"/><circle cx="150" cy="142" r="8" fill="#5a3d2b"/></g><circle cx="120" cy="193" r="3" fill="#5a3d2b" stroke="none"/></g></svg>
+ </button>
+</section>
+
+<dialog id="accounts" class="sheet" aria-labelledby="accounts-title">
+ <div class="sheet-head"><h2 id="accounts-title" tabindex="-1" autofocus>الحسابات</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="account-list"></div>
+ <form id="account-form" novalidate>
+  <label for="child-name">طفل جديد</label><input id="child-name" autocomplete="off" maxlength="40" placeholder="الاسم">
+  <p id="account-error" class="error" role="alert" hidden></p>
+  <button class="primary" type="submit">ابدأ</button>
+ </form>
+</dialog>
+<dialog id="password" class="sheet narrow" aria-labelledby="password-title">
+ <div class="sheet-head"><h2 id="password-title" tabindex="-1" autofocus>كلمة السر</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="pin-dots" class="pin-dots" dir="ltr" aria-hidden="true"><i></i><i></i><i></i></div>
+ <p id="pin-error" class="error center" role="alert"></p>
+ <div id="pin-pad" class="pin-pad" dir="ltr"></div>
+</dialog>
+<dialog id="report" class="sheet wide" aria-labelledby="report-title">
+ <div class="sheet-head"><h2 id="report-title" tabindex="-1" autofocus>تقرير الطفل</h2><div class="sheet-tools"><button id="report-pdf" class="icon" type="button" aria-label="تنزيل التقرير PDF" title="تنزيل التقرير PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></button><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
+ <p id="report-status" class="center muted" role="status" hidden></p>
+ <div id="report-body"></div>
+</dialog>
+<dialog id="goals" class="sheet" aria-labelledby="goals-title">
+ <div class="sheet-head"><h2 id="goals-title" tabindex="-1" autofocus>الأهداف</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="goals-body"></div>
+</dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>

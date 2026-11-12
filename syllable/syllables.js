@@ -4,6 +4,7 @@ const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const paths = {
  home:'<path d="m3 10 9-7 9 7v11H3Z"/><path d="M9 21v-8h6v8"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3Z"/>',
  play:'<path d="m8 4 12 8-12 8Z"/>', resume:'<path d="m9 5 10 7-10 7Z"/><path d="M4 5v14"/>',
  pause:'<path d="M8 5v14M16 5v14"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',cross:'<path d="m6 6 12 12M18 6 6 18"/>',check:'<path d="m4 12 5 5L20 6"/>',
  half:'<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h8"/>',
@@ -348,4 +349,4 @@ let resizeTimer;
 window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(state.screen==='activity'&&state.kind==='practice')renderPractice();},120);});
 window.addEventListener('pagehide',()=>{invalidate();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(state.screen==='activity'&&state.session?.status==='draft'&&['listening','production'].includes(state.kind))void safe(pauseTest)();else stopAudio();}});
-showScreen('home');updateResume();if(document.body.dataset.entry==='matching')openSetup('matching');
+showScreen('home');updateResume();if(document.body.dataset.entry==='matching')openSetup('matching');else if(['practice','listening','production'].includes(location.hash.slice(1)))openSetup(location.hash.slice(1));else if(location.hash==='#results')$('#history-button')?.click();

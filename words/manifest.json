@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "نطقي",
+  "short_name": "نطقي",
+  "description": "نطقي: ألعاب يتدرّب فيها الطفل على نطق أصوات العربية في الكلمات.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#8fd8ee",
+  "categories": ["education", "kids"],
+  "orientation": "any",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

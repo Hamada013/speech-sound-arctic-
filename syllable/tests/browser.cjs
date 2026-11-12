@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium,webkit}=require(process.env.ARTICULATION_PLAYWRIGHT||'playwright');
-const repo=path.resolve(__dirname,'../../../..');
+const repo=path.resolve(__dirname,'../..');
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.wav':'audio/wav','.json':'application/json'};
 const server=http.createServer(async(req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(repo,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));if(!file.startsWith(repo+path.sep)){res.writeHead(403).end();return;}try{const data=await fs.promises.readFile(file);const headers={'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','Accept-Ranges':'bytes'};const range=/^bytes=(\d+)-(\d*)$/.exec(req.headers.range||'');if(range){const start=Number(range[1]),end=Math.min(data.length-1,range[2]?Number(range[2]):data.length-1);if(start>=data.length||end<start){res.writeHead(416,{'Content-Range':`bytes */${data.length}`}).end();return;}res.writeHead(206,{...headers,'Content-Range':`bytes ${start}-${end}/${data.length}`,'Content-Length':end-start+1}).end(data.subarray(start,end+1));}else res.writeHead(200,{...headers,'Content-Length':data.length}).end(data);}catch{res.writeHead(404).end();}});
 const visible=(page,selector)=>page.locator(selector).waitFor({state:'visible'});
@@ -30,8 +30,8 @@ async function run(engine,name,origin){
  const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true}),page=await context.newPage(),errors=[],external=[];
  page.on('pageerror',error=>errors.push(error.message));page.on('request',req=>{if(!req.url().startsWith(origin)&&!req.url().startsWith('data:'))external.push(req.url());});
  try{
-  await page.goto(origin+'/tools/articulation/syllable/syllable.html');await visible(page,'#home-view');
-  assert.equal(await page.locator('.activity-card').count(),4);
+  await page.goto(origin+'/syllable/classic.html');await visible(page,'#home-view');
+  assert.equal(await page.locator('.activity-card').count(),5);
   assert.equal(await page.locator('meta[name=viewport]').getAttribute('content'),'width=device-width,initial-scale=1,viewport-fit=cover');
   const viewports=[[320,568],[390,844],[568,320],[667,375],[844,390],[768,1024],[1024,768],[820,1180],[1180,820]];
   await setup(page,'practice','vcv');

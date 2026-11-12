@@ -1,0 +1,110 @@
+<!doctype html><meta charset=utf-8>
+<!-- Template for scripts/animate.cjs: draws one frame of a syllable on the therapist's two drawings. --><body style="margin:0;background:#e3eed2"><div id=v></div><script>
+const P=new URLSearchParams(location.search),A=+P.get('a'),R=+P.get('r'),C=+P.get('c'),F=+P.get('f'),ENV=JSON.parse(P.get('env'));
+/* What each vowel does once the lips open: mouth width, opening up and down, lip thickening, jaw turn, lip rounding, and whether teeth show. */
+const VOWEL={a:{W:170,up:12,down:58,thick:0,jaw:12,round:0,teeth:1,smile:0},u:{W:94,up:9,down:26,thick:9,jaw:5,round:1,teeth:0,smile:0},i:{W:208,up:8,down:21,thick:-4,jaw:5,round:0,teeth:1,smile:8}}[P.get('v')];
+/* Tongue shapes for the side view: 13 points from the root, over the top, to the tip and back underneath. */
+const SHAPE={
+  rest:[352,470,340,400,384,330,452,322,520,318,566,336,580,360,584,372,574,378,564,376,520,372,478,394,440,470],
+  alv:[352,470,340,400,384,330,452,322,520,316,560,312,578,318,586,330,580,346,566,350,520,372,478,394,440,470],
+  sib:[352,470,340,400,384,330,452,324,520,320,560,316,576,322,583,337,577,350,564,354,520,374,478,394,440,470],
+  dent:[352,470,340,400,384,330,452,326,520,326,568,332,592,338,607,348,600,358,580,358,520,376,478,396,440,470],
+  post:[352,470,340,394,384,322,456,312,520,306,554,306,568,312,574,324,572,340,560,346,520,368,478,392,440,470],
+  vel:[352,470,344,380,380,312,432,306,490,312,548,340,566,372,572,382,562,388,552,386,520,380,478,400,440,470],
+  velf:[352,470,342,384,370,318,406,313,478,318,548,342,566,372,572,382,562,388,552,386,520,380,478,400,440,470],
+  uvu:[352,470,336,400,344,328,372,314,450,322,540,346,566,372,572,382,562,388,552,386,520,380,478,400,440,470],
+  pha:[356,470,345,440,349,382,420,344,500,336,556,350,570,370,576,380,566,386,556,384,520,380,478,400,440,470],
+  emAlv:[352,470,336,392,360,318,416,311,488,338,556,316,578,318,586,330,580,346,566,350,520,372,478,394,440,470],
+  emSib:[352,470,336,392,360,318,416,311,488,340,556,320,576,322,583,337,577,350,564,354,520,374,478,394,440,470],
+  emDent:[352,470,336,392,360,318,416,311,488,340,568,334,592,338,607,348,600,358,580,358,520,376,478,396,440,470]};
+/* Each Arabic consonant: tongue shape; lips (closed, against the teeth, or rounded); how open the mouth stays; voicing; manner; where it touches. */
+const ALV=[586,330],DENT=[603,348],SIB=[584,337];
+const CONS={
+  b:{shape:'rest',lips:1,gap:0,voiced:1,manner:'stop',contact:[614,352]},
+  m:{shape:'rest',lips:1,gap:0,voiced:1,manner:'nasal',contact:[614,352],wide:1},
+  f:{shape:'rest',lab:1,gap:.3,voiced:0,manner:'fric',contact:[597,343]},
+  t:{shape:'alv',gap:.42,voiced:0,manner:'stop',tip:'alv',contact:ALV},
+  d:{shape:'alv',gap:.42,voiced:1,manner:'stop',tip:'alv',contact:ALV},
+  T:{shape:'emAlv',gap:.42,voiced:0,manner:'stop',tip:'alv',round:.3,contact:ALV},
+  D:{shape:'emAlv',gap:.42,voiced:1,manner:'stop',tip:'alv',round:.3,contact:ALV},
+  n:{shape:'alv',gap:.4,voiced:1,manner:'nasal',tip:'alv',contact:ALV,wide:1},
+  l:{shape:'alv',gap:.45,voiced:1,manner:'lat',tip:'alv',contact:ALV},
+  r:{shape:'alv',gap:.4,voiced:1,manner:'trill',tip:'alv',contact:ALV},
+  s:{shape:'sib',gap:.5,voiced:0,manner:'fric',sib:1,contact:SIB},
+  z:{shape:'sib',gap:.5,voiced:1,manner:'fric',sib:1,contact:SIB},
+  S:{shape:'emSib',gap:.5,voiced:0,manner:'fric',sib:1,round:.3,contact:SIB},
+  th:{shape:'dent',gap:.34,voiced:0,manner:'fric',tip:'dent',contact:DENT},
+  dh:{shape:'dent',gap:.34,voiced:1,manner:'fric',tip:'dent',contact:DENT},
+  Z:{shape:'emDent',gap:.34,voiced:1,manner:'fric',tip:'dent',round:.3,contact:DENT},
+  sh:{shape:'post',gap:.55,voiced:0,manner:'fric',sib:1,round:.6,contact:[552,310]},
+  j:{shape:'post',gap:.5,voiced:1,manner:'aff',round:.5,contact:[552,310]},
+  k:{shape:'vel',gap:.45,voiced:0,manner:'stop',contact:[432,308]},
+  q:{shape:'uvu',gap:.5,voiced:0,manner:'stop',contact:[368,316],wide:1},
+  kh:{shape:'velf',gap:.45,voiced:0,manner:'fric',contact:[404,312],wide:1},
+  gh:{shape:'velf',gap:.45,voiced:1,manner:'fric',contact:[404,312],wide:1},
+  hh7:{shape:'pha',gap:.55,voiced:0,manner:'fric',contact:[347,408],wide:1},
+  ain:{shape:'pha',gap:.55,voiced:1,manner:'fric',contact:[347,408],wide:1},
+  hh:{shape:'rest',gap:.6,voiced:0,manner:'fric',glottal:1,wide:1}}[P.get('cons')];
+const TONGUE={a:[352,470,346,440,384,410,452,404,520,400,552,396,566,388,572,396,562,400,552,400,520,398,478,418,440,470],u:[352,470,330,380,370,312,430,318,500,340,552,380,566,388,572,396,562,400,552,400,520,398,478,418,440,470],i:[352,470,340,410,380,350,440,330,510,314,560,326,576,352,582,366,572,372,562,370,520,366,478,394,440,470]}[P.get('v')];
+const L='#3e2820',HL='#cf7a56';let K={};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(t,a,b)=>clamp((t-a)/(b-a),0,1),io=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,out=p=>1-Math.pow(1-p,3);
+const HOLD=Math.min(R-.4,F-.08);
+function pose(t){const press=io(seg(t,HOLD-.4,HOLD))*(1-out(seg(t,R-.02,R+.06)));const open=out(seg(t,R,R+.24))*(1-io(seg(t,C,C+.42)));const smile=io(seg(t,C+.38,C+.7));const at=Math.floor((t-A)*100);let e=0;for(let k=at-6;k<=at+6;k++)e=Math.max(e,ENV[k]||0);const blink=clamp(Math.max(1-Math.abs(t-.25)/.08,1-Math.abs(t-(C+1.0))/.08),0,1);/* The bee follows real voicing: voiced consonants buzz during their hold, every vowel buzzes. */
+  const vowelOn=out(seg(t,R-.02,R+.08))*(1-seg(t,C,C+.2)),loud=Math.max(CONS.voiced?press*.85:0,vowelOn);
+  const air=(CONS.manner==='fric'||CONS.manner==='aff')&&t>=(CONS.manner==='aff'?R-.12:F)&&t<R+.05&&press>.25?1:0,nose=CONS.manner==='nasal'&&press>.5&&t<R+.05?1:0;
+  return{press,open,smile,voice:loud>.1,loud,air,nose,burst:CONS.manner==='stop'||CONS.manner==='aff'?seg(t,R,R+.7):0,blink,t}}
+/* Your drawings stay exactly as they are; only the mouth, the blinking and the inside view move. */
+function front(p){
+  let g=`<image href="../animations/source/front.jpg" width="1024" height="1024"/>`;
+  g+=`<ellipse cx="514" cy="712" rx="104" ry="46" fill="${K.skin}"/>`;
+  for(const [x,y] of [[408,560],[616,560]])if(p.blink>.05){const k=p.blink;g+=`<ellipse cx="${x}" cy="${y}" rx="62" ry="${58}" fill="${K.skin}" opacity="${Math.min(1,k*1.4)}"/>`;if(k>.5)g+=`<path d="M${x-44} ${y+4}q44 22 88 0" fill="none" stroke="${L}" stroke-width="8" stroke-linecap="round"/>`}
+  const sq=CONS.lips?p.press:0,o=Math.max(p.open,p.press*CONS.gap),rd=(CONS.round||0)*p.press*(1-p.open),ld=CONS.lab?p.press*(1-p.open):0,cx=514,cy=706,W=(170-sq*12+(VOWEL.W-170)*o)*(1-.32*rd)*(CONS.sib&&!CONS.round?1+.08*p.press*(1-p.open):1),ui=cy-o*VOWEL.up-ld*22,li0=cy+o*VOWEL.down,li=li0+(ui+26-li0)*ld,th=sq*7-VOWEL.thick*o+rd*6,cy2=cy-p.smile*6-VOWEL.smile*p.open;
+  const up=`M${cx-W/2} ${cy2}C${cx-W*.34} ${cy-16+th} ${cx-W*.18} ${cy-26+th} ${cx-12} ${cy-22+th}Q${cx} ${cy-17+th} ${cx+12} ${cy-22+th}C${cx+W*.18} ${cy-26+th} ${cx+W*.34} ${cy-16+th} ${cx+W/2} ${cy2}C${cx+W*.3} ${ui+4} ${cx+W*.12} ${ui+1} ${cx} ${ui+3}C${cx-W*.12} ${ui+1} ${cx-W*.3} ${ui+4} ${cx-W/2} ${cy2}Z`;
+  const lo=`M${cx-W/2} ${cy2}C${cx-W*.3} ${li-1} ${cx+W*.3} ${li-1} ${cx+W/2} ${cy2}C${cx+W*.32} ${li+28-th} ${cx-W*.32} ${li+28-th} ${cx-W/2} ${cy2}Z`;
+  const cav=`M${cx-W/2+4} ${cy2}C${cx-W*.3} ${ui+4} ${cx+W*.3} ${ui+4} ${cx+W/2-4} ${cy2}C${cx+W*.3} ${li-1} ${cx-W*.3} ${li-1} ${cx-W/2+4} ${cy2}Z`;
+  if(o>.02)g+=`<clipPath id="m"><path d="${cav}"/></clipPath><path d="${cav}" fill="#6a2c33"/><g clip-path="url(#m)">${VOWEL.teeth||!CONS.lips&&p.press>.2||CONS.lab?`<rect x="${cx-W*.3}" y="${ui-4}" width="${W*.6}" height="${CONS.lab?24:18}" rx="6" fill="#fffaf2" stroke="#e2d6c4" stroke-width="2"/>`:''}<ellipse cx="${cx}" cy="${li-4}" rx="${W*.32}" ry="${6+p.open*20}" fill="#e9959a"/>${CONS.tip==='alv'&&p.press>.3?`<path d="M${cx-W*.2} ${ui+26}Q${cx} ${ui+4} ${cx+W*.2} ${ui+26}Z" fill="#ef9da3" stroke="#c96f78" stroke-width="2.5" stroke-linejoin="round"/>`:''}${CONS.sib&&p.press>.3?`<rect x="${cx-W*.27}" y="${li-17}" width="${W*.54}" height="18" rx="5" fill="#f4ece0" stroke="#e2d6c4" stroke-width="2"/>`:''}</g>${CONS.tip==='dent'&&p.press>.3?`<ellipse cx="${cx}" cy="${ui+15}" rx="${W*.2}" ry="${11*p.press}" fill="#ef9da3" stroke="#c96f78" stroke-width="2.5"/>`:''}`;
+  g+=`<path d="${up}" fill="${K.lipU}"/><path d="${lo}" fill="${K.lipL}"/><path d="M${cx-W/2} ${cy2}C${cx-W*.3} ${ui+4} ${cx+W*.3} ${ui+4} ${cx+W/2} ${cy2}" fill="none" stroke="${K.line}" stroke-width="${3+p.press*2}" stroke-linecap="round"/><path d="M${cx-24} ${li+36-th}q24 6 48 0" fill="none" stroke="${K.shade}" stroke-width="4" stroke-linecap="round"/>`;
+  if(CONS.lips&&p.press>.6&&p.open<.05)for(const s of [-1,1])g+=`<path d="M${cx+s*(W/2+14)} ${cy-12}q${s*10} 12 0 24M${cx+s*(W/2+28)} ${cy-20}q${s*14} 20 0 40" fill="none" stroke="${HL}" stroke-width="5" stroke-linecap="round"/>`;
+  if(p.air)for(let n=0;n<4;n++){const k=(p.t*2.6+n/4)%1;g+=`<circle cx="${cx+(n%2?1:-1)*(10+k*44)}" cy="${cy+6+k*84}" r="${4+k*7}" fill="#fff" stroke="#9fd0ee" stroke-width="2.5" opacity="${1-k}"/>`}
+  if(p.nose)for(const s of [-1,1])for(let n=0;n<2;n++){const k=(p.t*2.2+n/2)%1;g+=`<circle cx="${514+s*(20+k*46)}" cy="${632+k*26}" r="${4+k*6}" fill="#fff" stroke="#9fd0ee" stroke-width="2.5" opacity="${1-k}"/>`}
+  if(p.burst>0&&p.burst<1){const a=1-p.burst;for(const [dx,k] of [[-55,1],[0,1.25],[55,1]])g+=`<circle cx="${cx+dx*(.6+p.burst)}" cy="${cy-14-p.burst*150*k}" r="${9+p.burst*14}" fill="#fff" stroke="#9fd0ee" stroke-width="3" opacity="${a}"/>`}
+  if(p.loud>.05)for(const s of [-1,1])for(let n=0;n<3;n++){const k=(p.t*2.4+n/3)%1,x=514+s*(70+k*70),r=22+k*30;g+=`<path d="M${x} ${858-r}q${s*r*.55} ${r} 0 ${r*2}" fill="none" stroke="${HL}" stroke-width="${11-k*4}" stroke-linecap="round" opacity="${Math.min(1,p.loud*1.3)*(1-k*.8)}"/>`}
+  return g}
+const eyeDot=(x,y,r,blink)=>blink>.85?`<path d="M${x-r} ${y}q${r} ${r*.6} ${r*2} 0" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>`:`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*1.25*(1-blink*.9)}" fill="#3f2a1e"/><circle cx="${x+r*.35}" cy="${y-r*.5}" r="${r*.38}" fill="#fff"/>`;
+function side(p){
+  let g=`<image href="../animations/source/side.jpg" width="1024" height="1024"/>`;
+  if(p.blink>.05)g+=`<ellipse cx="362" cy="492" rx="26" ry="34" fill="${K.skin}" opacity="${Math.min(1,p.blink*1.4)}"/>`+(p.blink>.5?`<path d="M342 494q20 12 40-2" fill="none" stroke="${L}" stroke-width="6" stroke-linecap="round"/>`:'');
+  const ang=p.open*VOWEL.jaw,lift=CONS.lips?p.press*3:0,ldS=CONS.lab?p.press*(1-p.open):0,push=p.open*VOWEL.round*14,jaw=x=>`<g transform="rotate(${ang.toFixed(2)} 300 300)">${x}</g>`,st=w=>`stroke="${L}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+  const skull=`M330 50C190 50 104 160 112 300C118 400 170 470 250 520L470 560C480 520 500 470 520 440L560 352L612 350C626 346 632 334 628 322L616 300C606 292 610 284 624 282C654 280 680 262 674 236C668 214 642 206 622 200C602 130 540 50 330 50Z`;
+  const jawShape=`M440 470L560 ${356-lift}L600 ${354-lift}C614 ${352-lift} 628 360 628 374C628 388 616 396 604 398C598 406 606 418 612 432C620 456 602 486 570 500C530 516 480 520 460 510C444 500 436 486 440 470Z`;
+  let i=`<rect x="0" y="0" width="720" height="720" fill="${K.skin}"/><path d="${skull}" fill="${K.skin}"/>`+jaw(`<path d="${jawShape}" fill="${K.skin}"/>`);
+  i+=`<path d="M372 232C450 214 540 222 600 252L596 290L372 292Z" fill="#f3cdb1"/><path d="M380 304L588 304L590 350L560 352L440 470L362 470C344 420 344 340 380 304Z" fill="#7a3440"/>`;
+  i+=`<path d="M378 292C450 286 540 288 592 296L592 308C540 302 450 302 378 308Z" fill="#f6e7cc" ${st(3)}/><path d="M584 302L602 304L604 344C598 350 590 350 586 344Z" fill="#fffaf0" ${st(3)}/>`;
+  i+=`<path d="M380 302C360 303 336 300 316 294C310 304 316 316 330 320C352 324 372 320 384 314Z" fill="#ef9d97" transform="rotate(${(-24*p.nose*p.press).toFixed(1)} 382 306)" ${st(3)}/><path d="M604 312C622 314 632 328 628 340C624 349 616 351 606 351L602 344Z" fill="${K.lipU}" transform="translate(${push} 0)" ${st(3)}/>`;
+  const rest=[352,470,340,400,384,330,452,322,520,318,566,336,580,360,584,372,574,378,564,376,520,372,478,394,440,470],shape=SHAPE[CONS.shape].slice(),hold=rest.map((v,k)=>v+(shape[k]-v)*p.press),q=hold.map((v,k)=>v+(TONGUE[k]-v)*p.open);if(CONS.manner==='trill'&&p.press>.3&&p.t<R){const f=Math.sin(p.t*62)*8*p.press;q[13]+=f;q[11]+=f*.6;q[15]+=f*.6}
+  const tongue=`<path d="M${q[0]} ${q[1]}C${q[2]} ${q[3]} ${q[4]} ${q[5]} ${q[6]} ${q[7]}C${q[8]} ${q[9]} ${q[10]} ${q[11]} ${q[12]} ${q[13]}C${q[14]} ${q[15]} ${q[16]} ${q[17]} ${q[18]} ${q[19]}C${q[20]} ${q[21]} ${q[22]} ${q[23]} ${q[24]} ${q[25]}Z" fill="#f5a0a8" ${st(3)}/>`+eyeDot(q[8]-24,q[9]+20,6,p.blink)+eyeDot(q[8]+2,q[9]+18,6,p.blink)+`<path d="M${q[8]-18} ${q[9]+36}q8 6 16 0" fill="none" ${st(3)}/>`;
+  i+=jaw(`${tongue}<path d="M586 ${358-lift}L602 ${356-lift}L604 392C598 398 590 398 586 392Z" fill="#fffaf0" ${st(3)}/><path d="M604 ${353-lift}C616 ${351-lift} 628 360 628 374C628 388 616 396 604 398L600 390L600 ${360-lift}Z" fill="${K.lipL}" transform="translate(${push-12*ldS} ${-17*ldS})" ${st(3)}/>`);
+  if(p.open>.15)for(let n=0;n<3;n++){const k=(p.t*1.6+n/3)%1;i+=`<circle cx="${650+k*70}" cy="${372+p.open*40-k*20+n*8}" r="${7+k*8}" fill="#fff" stroke="#9fd0ee" stroke-width="3" opacity="${(1-k)*.95}"/>`}
+  /* Air: a steady stream through the narrow place for hissing sounds, through the nose for م and ن. */
+  if(p.air){const [sx,sy]=CONS.glottal?[372,460]:CONS.contact;for(let n=0;n<5;n++){const k=(p.t*2.4+n/5)%1,x=sx+(660-sx)*k,y=sy+(358-sy)*k+Math.sin(k*9+n)*4;i+=`<circle cx="${x}" cy="${y}" r="${4+k*5}" fill="#fff" stroke="#7fb0d6" stroke-width="2.5" opacity="${Math.min(1,(1-k)*1.6)}"/>`}}
+  if(p.nose)for(let n=0;n<5;n++){const k=(p.t*2+n/5)%1,pt=k<.3?[350+k/.3*14,330-k/.3*64]:[364+(k-.3)/.7*270,266-(k-.3)/.7*10];i+=`<circle cx="${pt[0]}" cy="${pt[1]}" r="${5+k*4}" fill="#fff" stroke="#7fb0d6" stroke-width="2.5" opacity="${Math.min(1,(1-k)*1.6)}"/>`}
+  if(CONS.contact&&p.press>.6&&p.open<.05)i+=`<circle cx="${CONS.contact[0]}" cy="${CONS.contact[1]}" r="20" fill="none" stroke="${HL}" stroke-width="5" stroke-dasharray="7 6"/>`;
+  const cx=343,cy=670,R0=112;
+  g+=`<clipPath id="glass"><circle cx="${cx}" cy="${cy}" r="${R0}"/></clipPath><g clip-path="url(#glass)"><g transform="${CONS.wide?'translate(634.4 439.4) scale(-.62 .62)':'translate(747 370) scale(-.8 .8)'}">${i}</g></g>`;
+  g+=`<circle cx="${cx}" cy="${cy}" r="${R0+7}" fill="none" stroke="#e0b25c" stroke-width="14"/><circle cx="${cx}" cy="${cy}" r="${R0+14}" fill="none" stroke="${L}" stroke-width="4"/><circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="${L}" stroke-width="3"/><path d="M${cx+R0*.62} ${cy-R0*.5}a${R0*.8} ${R0*.8} 0 0 0 ${-R0*.5} ${-R0*.32}" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".7"/>`;
+  if(CONS.glottal&&p.press>.6&&p.open<.05)g+=`<circle cx="512" cy="826" r="42" fill="none" stroke="${HL}" stroke-width="6" stroke-dasharray="9 8"/>`;
+  if(p.nose)for(let n=0;n<2;n++){const k=(p.t*2.2+n/2)%1;g+=`<circle cx="${238-k*70}" cy="${596+k*22}" r="${5+k*7}" fill="#fff" stroke="#9fd0ee" stroke-width="2.5" opacity="${1-k}"/>`}
+  if(p.loud>.03){const k=p.loud,flap=Math.sin(p.t*95),bob=Math.sin(p.t*30)*3,x=530,y=840+bob;
+    g+=`<g transform="translate(${x} ${y}) scale(${1.1+.5*k})" opacity="${Math.min(1,k*1.6)}">`;
+    for(const n of [0,1])g+=`<path d="M${-30-n*14} ${-18+n*18}q-12 12 0 24" fill="none" stroke="${HL}" stroke-width="5" stroke-linecap="round" opacity="${.9-n*.3}"/>`;
+    g+=`<ellipse cx="-6" cy="-24" rx="15" ry="${22*(.35+.65*Math.abs(flap))}" transform="rotate(-25 -6 -14)" fill="#eaf6ff" fill-opacity=".85" stroke="${L}" stroke-width="3"/><ellipse cx="10" cy="-24" rx="13" ry="${19*(.35+.65*Math.abs(flap))}" transform="rotate(20 10 -14)" fill="#eaf6ff" fill-opacity=".85" stroke="${L}" stroke-width="3"/>`;
+    g+=`<ellipse cx="0" cy="0" rx="30" ry="21" fill="#f6c84c" stroke="${L}" stroke-width="3.5"/><path d="M-8 -20v40M8 -19v38" stroke="${L}" stroke-width="7"/><path d="M28 0l10 0" stroke="${L}" stroke-width="4" stroke-linecap="round"/><circle cx="-22" cy="-4" r="13" fill="#f6c84c" stroke="${L}" stroke-width="3.5"/><circle cx="-26" cy="-7" r="3.2" fill="${L}"/><path d="M-27 2q4 3 8 0" fill="none" stroke="${L}" stroke-width="2.5" stroke-linecap="round"/><path d="M-26 -17q-6-10-12-10M-20 -17q-2-10 2-14" fill="none" stroke="${L}" stroke-width="2.5" stroke-linecap="round"/></g>`}
+  return g}
+const MODE=P.get('mode');
+/* One square video: just the drawing on white, nothing else. */
+function frame(t){const p=pose(t);
+  const [inner,ox,oy,rw]=MODE==='side'?[side(p),-6,-20,1062]:[front(p),59,118,906],k=1080/rw;
+  document.getElementById('v').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080"><rect width="1080" height="1080" fill="#fff"/><g transform="scale(${k}) translate(${-ox} ${-oy})">${inner}</g></svg>`}
+/* Colours come from your drawing itself. */
+window.ready=new Promise(res=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=1024;const g=c.getContext('2d');g.drawImage(img,0,0);const px=(x,y)=>{const d=g.getImageData(x-2,y-2,5,5).data;let r=0,gg=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];gg+=d[i+1];b+=d[i+2]}const n=d.length/4;return`rgb(${Math.round(r/n)},${Math.round(gg/n)},${Math.round(b/n)})`};K={skin:px(600,690),lipU:px(500,692),lipL:px(520,718),line:px(470,703),shade:px(514,741)};res(K)};img.src='../animations/source/front.jpg'});
+</script>

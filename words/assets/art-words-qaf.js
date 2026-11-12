@@ -1,0 +1,17 @@
+/* ق: drawings for the qaf words. Words already in other sounds reuse their drawings. */
+(() => {
+  const { INK, S, T, F, eye, gloss, tube, starPath, dots, clump, line, spot, words } = window.ArticulationKit;
+  const coin = (x, y, r = 22) => `<circle cx="${x}" cy="${y}" r="${r}" ${F('gold')} ${S}/><circle cx="${x}" cy="${y}" r="${r * .55}" fill="none" stroke="#c98a1f" stroke-width="3"/>`;
+  const fruit = (list, r = 12) => list.map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${S} stroke-width="3.5"/>`).join('');
+  const stall = (x, w, c) => `${line(`M${x + 6} 50v130M${x + w - 6} 50v130`, INK, 6)}${Array.from({ length: 4 }, (_, i) => `<path d="M${x + i * w / 4} 26h${w / 4}v26c-${w / 8} 12-${w / 4} 12-${w / 4} 0z" fill="${i % 2 ? '#fff' : c}" ${S} stroke-width="3.5"/>`).join('')}<rect x="${x}" y="128" width="${w}" height="56" rx="5" ${F('wood')} ${S}/>`;
+  Object.assign(words, {
+    pencil: `<g transform="rotate(40 100 100)"><rect x="84" y="6" width="32" height="26" rx="6" ${F('pinkin')} ${S}/><rect x="84" y="28" width="32" height="14" ${F('steel')} ${S} stroke-width="4"/><rect x="84" y="40" width="32" height="112" ${F('gold')} ${S}/>${line('M95 44v104M105 44v104', '#d9971d', 3)}<path d="M84 150h32l-16 44z" ${F('cream')} ${S}/><path d="M94 176h12l-6 18z" fill="${INK}"/></g>`,
+    boatword: `<path d="M0 200v-36q25-14 50 0t50 0 50 0 50 0v36z" ${F('water')}/><rect x="60" y="56" width="66" height="60" rx="5" ${F('white')} ${S}/><rect x="72" y="68" width="42" height="26" rx="3" ${F('sky')} ${S} stroke-width="3.5"/><rect x="50" y="46" width="86" height="14" rx="4" ${F('red')} ${S}/>${line('M152 104V20', INK, 7)}<path d="M152 22l30 12-30 12z" ${F('gold')} ${S} stroke-width="3.5"/><path d="M8 112h184c-4 28-20 50-44 56H52c-24-6-40-28-44-56z" ${F('red')} ${S}/>${line('M16 132h168', '#fff', 7)}`,
+    money: `<rect x="10" y="30" width="180" height="96" rx="8" ${F('leaf')} ${S}/><rect x="24" y="44" width="152" height="68" rx="4" fill="none" stroke="#dff2c8" stroke-width="4"/><circle cx="100" cy="78" r="26" fill="#dff2c8" ${S} stroke-width="4"/><path d="${starPath(100, 78, 16, 7)}" ${F('gold')}/>${coin(52, 152, 26)}${coin(106, 160, 26)}${coin(156, 148, 26)}`,
+    dish: `<ellipse cx="100" cy="162" rx="94" ry="22" ${F('steel')} ${S}/><path d="M22 156C22 72 178 72 178 156z" ${F('steel')} ${S}/><circle cx="100" cy="86" r="12" ${F('gold')} ${S}/>${gloss('M42 134c6-20 20-34 38-40', 8)}${line('M70 54q-10-12 0-24M130 54q-10-12 0-24', '#a9bccb', 5)}`,
+    paper: `<rect x="44" y="22" width="130" height="164" rx="6" ${F('frost')} ${S} transform="rotate(7 110 104)"/><path d="M28 14h100l40 40v132H28z" ${F('white')} ${S}/><path d="M128 14v40h40z" ${F('frost')} ${S}/>${line('M48 74h96M48 96h96M48 118h96M48 140h96M48 162h60', '#a9bccb', 6)}`,
+    market: `${stall(6, 90, '#e2464d')}${stall(104, 90, '#3f9a5c')}${fruit([[24, 118, '#ef5a6a'], [46, 118, '#f2994a'], [68, 118, '#ffc93c'], [36, 102, '#f2994a'], [58, 102, '#ef5a6a']])}${fruit([[122, 118, '#79c46e'], [144, 118, '#b48ae8'], [166, 118, '#79c46e'], [134, 102, '#b48ae8'], [156, 102, '#79c46e']])}${line('M20 150h62M118 150h62', '#7d4d27', 4)}`,
+    lightning: `${clump([[52, 66, 32], [98, 44, 40], [146, 66, 32], [98, 78, 34]], '#8493a6')}<path d="M112 84L60 146h36l-16 50 66-74h-36l18-38z" ${F('gold')} ${S}/>`,
+    leg: `<path d="M74 6h56l-6 96-2 66h-38l-2-66z" ${F('skin')} ${S}/><path d="M84 160h38l2 14c18 4 34 8 34 20H84z" ${F('skin')} ${S}/><path d="M68 2h68l-4 54H72z" ${F('blue')} ${S}/>${spot(102, 114, 22)}`,
+  });
+})();

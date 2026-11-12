@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#8fd8ee"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="نطقي">
+<meta name="description" content="نطقي: ألعاب يتدرّب فيها الطفل على نطق أصوات العربية في الكلمات."><title>نطقي</title>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icons/icon-192.png" type="image/png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/styles.css"><link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css"><link rel="stylesheet" href="assets/updates.css">
+<script>window.SoundProgress={active:()=>window.ArticulationActive?.()||null};</script>
+<script src="assets/vendor/phaser.min.js" defer></script><script src="assets/data.js" defer></script><script src="assets/art-kit.js" defer></script><script src="assets/art-common.js" defer></script><script src="assets/art-words-alef.js" defer></script><script src="assets/art-words-ba.js" defer></script><script src="assets/art-words-ta.js" defer></script><script src="assets/art-words-tha.js" defer></script><script src="assets/art-words-jeem.js" defer></script><script src="assets/art-words-ha.js" defer></script><script src="assets/art-words-kha.js" defer></script><script src="assets/art-words-dal.js" defer></script><script src="assets/art-words-dhal.js" defer></script><script src="assets/art-words-ra.js" defer></script><script src="assets/art-words-zay.js" defer></script><script src="assets/art-words-seen.js" defer></script><script src="assets/art-words-sheen.js" defer></script><script src="assets/art-words-sad.js" defer></script><script src="assets/art-words-dad.js" defer></script><script src="assets/art-words-tta.js" defer></script><script src="assets/art-words-zha.js" defer></script><script src="assets/art-words-ain.js" defer></script><script src="assets/art-words-ghain.js" defer></script><script src="assets/art-words-fa.js" defer></script><script src="assets/art-words-qaf.js" defer></script><script src="assets/art-words-kaf.js" defer></script><script src="assets/art-words-lam.js" defer></script><script src="assets/art-words-mim.js" defer></script><script src="assets/art-words-nun.js" defer></script><script src="assets/art-words-heh.js" defer></script><script src="assets/art-words-waw.js" defer></script><script src="assets/art-words-ya.js" defer></script><script src="assets/art-house.js" defer></script><script src="assets/art-street.js" defer></script><script src="assets/art-cozy.js" defer></script><script src="assets/art.js" defer></script><script src="assets/scenes.js" defer></script><script src="assets/audio.js" defer></script><script src="assets/plan.js" defer></script><script src="assets/game.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" data-app="articulation-words" defer></script><script src="assets/updates.js" defer></script><script src="assets/report.js" defer></script><script src="assets/app.js" defer></script><script type="module" src="assets/pwa.js"></script>
+</head><body>
+<div id="home" class="home">
+ <header class="topbar">
+  <div class="brand"><img id="brand-logo" src="assets/logo.webp" width="44" height="44" alt=""><strong>نطقي</strong></div>
+  <div class="tools">
+   <button id="report-open" class="icon" type="button" aria-label="تقرير الطفل" title="تقرير الطفل" aria-haspopup="dialog" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16v-5m5 5V6m5 10v-8"/></svg></button>
+   <button id="install" class="icon" type="button" aria-label="تنزيل التطبيق للعمل دون اتصال" title="تنزيل التطبيق للعمل دون اتصال" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></button>
+   <button id="goals-open" class="icon" type="button" aria-label="الأهداف البعيدة والقريبة" title="الأهداف البعيدة والقريبة" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></button>
+   <button id="account" class="account" type="button" aria-haspopup="dialog"><img id="account-face" width="36" height="36" alt="" hidden><span id="account-name">الحسابات</span></button>
+  </div>
+ </header>
+ <main class="home-main">
+  <section class="hero"><img id="hero-logo" src="assets/logo.webp" alt=""><h1>نطقي</h1><p>تدريب النطق</p></section>
+  <nav class="actions" aria-label="الأنشطة">
+   <button id="play" class="action" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg><span>العب</span></button>
+  </nav>
+  <button id="test-switch" class="switch" type="button" role="switch" aria-checked="false" aria-label="وضع المعالج"><span class="switch-text">وضع المعالج</span><span class="switch-track"><span></span></span></button>
+ </main>
+ <footer class="contact"><p>SPEECH AND LANGUAGE PATHOLOGY</p><p><strong>Ahmad Ghanem</strong></p><p>Latakia - Syria</p><p><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></p></footer>
+</div>
+
+<section id="letters" class="letters" hidden aria-label="اختر صوتًا">
+ <button id="letters-back" class="hud-button" type="button" aria-label="الرئيسية" title="الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/></svg></button>
+ <div class="wood-board"><div id="letter-tiles" class="letter-tiles"></div></div>
+</section>
+
+<section id="stage" class="stage" hidden aria-label="اللعبة">
+ <div id="world" class="world"></div>
+ <div class="hud">
+  <button id="leave" class="hud-button" type="button" aria-label="الرئيسية" title="الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/></svg></button>
+  <div id="stars" class="stars" role="img" aria-label=""></div>
+  <button id="bag" class="bag" type="button" aria-label="افتح الحقيبة" title="افتح الحقيبة" aria-haspopup="dialog"><img id="bag-art" alt=""><b id="bag-count" dir="ltr">0</b></button>
+ </div>
+ <p id="loading" class="loading" role="status">جارٍ التجهيز…</p>
+ <button id="turn" class="turn" type="button" aria-label="أدر الهاتف لترى اللعبة كاملة">
+  <svg viewBox="0 0 240 240" aria-hidden="true">
+   <path class="turn-arc" d="M186 44A100 100 0 0 1 216 96"/><path class="turn-head" d="M204 92l13 13 9-16z"/>
+   <g class="turn-phone"><rect x="75" y="40" width="90" height="160" rx="15" fill="#f8ecd2"/><rect x="84" y="54" width="72" height="132" rx="5" fill="#a9dbe6" stroke-width="2.5"/>
+    <g transform="rotate(-90 120 120)" stroke="none"><ellipse cx="120" cy="124" rx="50" ry="25" fill="#ecd9a8"/><ellipse cx="120" cy="122" rx="41" ry="19" fill="#b9d68f"/><path d="M100 118l10-24 10 24z" fill="#9fc378"/><circle cx="136" cy="112" r="7" fill="#f4a596"/></g>
+    <circle cx="120" cy="193" r="3" fill="#5a3d2b" stroke="none"/></g>
+  </svg>
+ </button>
+
+ <div class="light" aria-hidden="true"></div>
+ <div id="pack" class="pack" role="dialog" aria-modal="true" aria-label="الحقيبة" hidden>
+  <div class="pack-bag"><div class="pack-flap"><button id="pack-close" class="round pack-x" type="button" aria-label="أغلق الحقيبة" title="أغلق الحقيبة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><i class="pack-buckle"></i></div><div id="pack-pockets" class="pack-pockets"></div></div>
+ </div>
+
+ <div id="encounter" class="encounter" role="dialog" aria-modal="true" aria-labelledby="enc-word" tabindex="-1" hidden>
+  <div class="enc-card">
+  <img id="enc-art" class="enc-art" alt="">
+  <p id="enc-word" class="enc-word"></p>
+  <p id="enc-error" class="enc-error" role="status" hidden></p>
+  <div class="enc-controls">
+   <button id="enc-replay" class="round replay" type="button" hidden aria-label="اسمع الكلمة" title="اسمع الكلمة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6L7 10zM16 9a4 4 0 0 1 0 6m2.5-9a8 8 0 0 1 0 12"/></svg></button>
+   <button id="enc-collect" class="round collect" type="button" aria-label="ضعها في الحقيبة" title="ضعها في الحقيبة" hidden><img id="enc-bag" alt=""></button>
+   <div id="enc-grades" class="grades enc-grades" hidden>
+    <button data-score="1" class="grade right" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>صحيح</span></button>
+    <button data-score="0.5" class="grade semi" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg><span>جزئي</span></button>
+    <button data-score="0" class="grade wrong" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><span>خطأ</span></button>
+   </div>
+  </div>
+  </div>
+ </div>
+
+ <div id="board" class="board-layer" role="dialog" aria-modal="true" aria-label="ما جمعته" hidden>
+  <div class="wood-board"><div id="board-items" class="board-items"></div></div>
+  <button id="board-go" class="round go" type="button" aria-label="ابدأ الرحلة" title="ابدأ الرحلة"><img id="board-go-art" alt=""></button>
+ </div>
+
+ <div id="done" class="panel-layer party" role="dialog" aria-modal="true" aria-labelledby="done-title" hidden>
+  <div class="panel score-panel"><div id="done-stars" class="done-stars" aria-hidden="true"></div><h2 id="done-title">أحسنت!</h2><div id="done-result"></div><div class="row"><button id="done-again" class="primary" type="button">العب من جديد</button><button id="done-home" class="secondary" type="button">الرئيسية</button></div></div>
+ </div>
+</section>
+
+<dialog id="accounts" class="sheet" aria-labelledby="accounts-title">
+ <div class="sheet-head"><h2 id="accounts-title" tabindex="-1" autofocus>الحسابات</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="account-list"></div>
+ <form id="account-form" novalidate>
+  <label for="child-name">طفل جديد</label><input id="child-name" autocomplete="off" maxlength="40" placeholder="الاسم">
+  <div class="heroes" role="radiogroup" aria-label="الشخصية">
+   <label class="hero-pick"><input type="radio" name="character" value="boy" checked><img id="pick-boy" alt=""><span>ولد</span></label>
+   <label class="hero-pick"><input type="radio" name="character" value="girl"><img id="pick-girl" alt=""><span>بنت</span></label>
+  </div>
+  <p id="account-error" class="error" role="alert" hidden></p>
+  <button class="primary" type="submit">ابدأ</button>
+ </form>
+</dialog>
+
+<dialog id="password" class="sheet narrow" aria-labelledby="password-title">
+ <div class="sheet-head"><h2 id="password-title" tabindex="-1" autofocus>كلمة السر</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="pin-dots" class="pin-dots" dir="ltr" aria-hidden="true"><i></i><i></i><i></i></div>
+ <p id="pin-error" class="error center" role="alert"></p>
+ <div id="pin-pad" class="pin-pad" dir="ltr"></div>
+</dialog>
+
+<dialog id="report" class="sheet wide" aria-labelledby="report-title">
+ <div class="sheet-head"><h2 id="report-title" tabindex="-1" autofocus>تقرير الطفل</h2><div class="sheet-tools"><button id="report-pdf" class="icon" type="button" aria-label="تنزيل التقرير PDF" title="تنزيل التقرير PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></button><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
+ <p id="report-status" class="center muted" role="status" hidden></p>
+ <div id="report-body"></div>
+</dialog>
+
+<dialog id="goals" class="sheet" aria-labelledby="goals-title">
+ <div class="sheet-head"><h2 id="goals-title" tabindex="-1" autofocus>الأهداف</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="goals-body"></div>
+</dialog>
+
+<dialog id="install-dialog" class="sheet narrow" aria-labelledby="install-title">
+ <div class="sheet-head"><h2 id="install-title" tabindex="-1" autofocus>تنزيل</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <progress id="offline-progress" max="100" value="0"></progress><p id="offline-status" class="center" dir="ltr" role="status">0%</p><p id="offline-error" class="error center" role="alert" hidden></p>
+ <button id="offline-download" class="primary" type="button" disabled>تنزيل</button>
+</dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>
