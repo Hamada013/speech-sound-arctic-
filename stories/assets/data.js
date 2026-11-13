@@ -2,9 +2,9 @@
    Every page is one short fusha sentence full of the target sound: [sentence with tashkeel, picture].
    Recording numbers come from the order: story 1 has 1-5, story 2 has 6-10, and so on (sounds/README.txt lists them).
    Pictures use ../phrases/assets/pictures.js (see sentences/assets/data.js for the kinds: one, two, act, at, on, in, sky…).
-   Draft for the therapist's approval: the book screen is built once the stories are approved (docs/roadmap.md, item 6). */
+   The book screen is assets/app.js. Change any sentence here; then run node phrases/scripts/recordings.cjs stories for the recording list. */
 window.ArticulationData = (() => {
-  const positions = [{ id: 'pages', name: 'الصفحات' }, { id: 'retell', name: 'إعادة الحكي' }];
+  const positions = [{ id: 'pages', name: 'الصفحات', example: 'يسمع كل صفحة ويقولها' }, { id: 'retell', name: 'إعادة الحكي', example: 'يرتّب الصور ويحكي القصة' }];
   const STORIES = [
     ['alef', 'أ', 'صوت الهمزة', 'rabbit', 'الْأَرْنَبُ أَمِيرٌ', [
       ['هَذَا أَرْنَبٌ أَبْيَضُ اسْمُهُ أَمِيرٌ', ['one', 'rabbit']],
@@ -177,7 +177,8 @@ window.ArticulationData = (() => {
   ];
   const sounds = STORIES.map(([id, letter, name, art, story, pages], s) => {
     const phrases = pages.map(([text, picture], i) => ({ n: s * 5 + i + 1, id: `${id}-${i + 1}`, text, picture, sound: id }));
-    return { id, letter, name, art, story, phrases, words: { pages: phrases } };
+    /* The plan reads words[level] to count a whole session: five graded pages; a retelling counts whenever sounds were counted. */
+    return { id, letter, name, art, story, phrases, words: { pages: phrases, retell: phrases.slice(0, 1) } };
   });
   return { title: 'القصص', positions, sounds, soundById: id => sounds.find(entry => entry.id === id), positionName: id => positions.find(entry => entry.id === id)?.name || id };
 })();

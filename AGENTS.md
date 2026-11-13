@@ -4,11 +4,12 @@ This repository holds the articulation apps by Ahmad Ghanem. It must never link 
 
 - The home page `index.html` is one app; its buttons are its parts. [docs/roadmap.md](docs/roadmap.md) holds the decisions and the plan (side bar, combined reports, intervention plan, sounds from a test report, phrases, sentences, stories). Read it before working on the app as a whole and keep it up to date.
 - `assets/`: what every part shares: the one account list (`children.js`), the accounts window and kid faces (`accounts.js`), and the parent check.
-- The intervention plan: `assets/therapy.js` (plan from the test, levels, daily sessions, locks), `assets/today.js` and `today.css` (today's activity inside a part), and the plan page `plan/`. See item 5 of the roadmap. Every part loads them and calls `ArticulationToday.offer` and `.done`; a new part must too.
+- The intervention plan: `assets/therapy.js` (plan from the test, levels, daily sessions, locks), `assets/today.js` and `today.css` (today's activity inside a part), and the plan page `plan/`. See item 5 of the roadmap. Every part loads them and calls `ArticulationToday.offer` and `.done`; a new part must too. Every page loads the side bar (`assets/nav.js`, `nav.css`).
 - The reports page `reports/` combines every part's results through `assets/results.js`, which reads each part's store; a new part needs its store key and ids in `assets/therapy.js` (`PARTS`) and its levels in `results.js`.
 - `words/` (نطقي): the word game. [docs/articulation-sounds.md](docs/articulation-sounds.md) explains what it does. Read it before changing the app, and follow it when adding a sound or scenario.
 - `test/` (اختبار النطق): the articulation screening test, moved here from the speech website with its history. See `test/README.md`; run its tests from `test/`.
 - `approaches/` (المناهج): minimal pairs, oppositions and cycles for error patterns. See `approaches/README.md`.
+- `stories/` (القصص): a picture book per sound, then ordering the pictures and retelling; the shell comes from the phrases part. See `stories/README.md`.
 - `sentences/` (الجمل): the same tower with longer sentences; it loads the phrases part's code. See `sentences/README.md`.
 - `phrases/` (العبارات): the tower of phrase bricks. See `phrases/README.md`; its pictures are composed from the words part's drawings.
 - `syllable/`: the syllable train, the earlier practice and test screens (`classic.html`, `matching.html`) and the mouth animation library. See `syllable/README.md`.

@@ -1,7 +1,7 @@
 /* The intervention plan of one child, made from the articulation test and followed by the whole app.
 
    The plan holds the sounds in error and the error patterns that two or more errors share.
-   - Each sound climbs the ladder of parts: syllables, words, phrases, sentences, then stories (when they are built).
+   - Each sound climbs the ladder of parts: syllables, words, phrases, sentences, then stories.
      It starts in words when the test found it right in some position (the child can already say it), else in syllables.
      It moves up a part once each short goal there has reached 80% in two whole sessions in a row, read from that part's
      own records (the same rule as each part's plan.js). Three sounds are worked on at a time, early sounds first.
@@ -26,11 +26,11 @@
     words: { name: 'الكلمات', href: 'words/index.html', store: 'articulation-words-children-v1', zones: ['first', 'middle', 'last'], size: 10, id: letter => WORD_IDS[letter] },
     phrases: { name: 'العبارات', href: 'phrases/index.html', store: 'articulation-phrases-children-v1', zones: ['say'], size: 10, id: letter => WORD_IDS[letter] },
     sentences: { name: 'الجمل', href: 'sentences/index.html', store: 'articulation-sentences-children-v1', zones: ['say'], size: 10, id: letter => WORD_IDS[letter] },
-    stories: { name: 'القصص', soon: true, zones: ['pages'] },
+    stories: { name: 'القصص', href: 'stories/index.html', store: 'articulation-stories-children-v1', zones: ['pages', 'retell'], size: { pages: 5, retell: 1 }, id: letter => WORD_IDS[letter] },
     approaches: { name: 'المناهج', href: 'approaches/index.html', store: 'articulation-approaches-children-v1', zones: ['pairs', 'oppositions', 'cycles'], size: { pairs: 10, oppositions: 10, cycles: 5 }, id: pattern => pattern },
   };
   const LADDER = ['syllables', 'words', 'phrases', 'sentences', 'stories'];
-  const ZONE_NAMES = { cv: 'صامت ثم حركة', vc: 'حركة ثم صامت', vcv: 'حركة وصامت وحركة', first: 'أول الكلمة', middle: 'وسط الكلمة', last: 'آخر الكلمة', say: 'يسمع ثم يقول', pages: 'الصفحات', pairs: 'الأزواج الدنيا', oppositions: 'المتقابلات', cycles: 'الدورات' };
+  const ZONE_NAMES = { cv: 'صامت ثم حركة', vc: 'حركة ثم صامت', vcv: 'حركة وصامت وحركة', first: 'أول الكلمة', middle: 'وسط الكلمة', last: 'آخر الكلمة', say: 'يسمع ثم يقول', pages: 'الصفحات', retell: 'إعادة الحكي', pairs: 'الأزواج الدنيا', oppositions: 'المتقابلات', cycles: 'الدورات' };
 
   /* Place, manner, voicing and emphasis of the 28 consonants, to name the pattern of a substitution. */
   const FEATURES = Object.fromEntries(Object.entries({

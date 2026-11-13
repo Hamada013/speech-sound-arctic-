@@ -1,0 +1,21 @@
+/* The side bar (assets/nav.js): a white list sliding in from the right, as the home page looks. */
+.nav-open{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:14px;background:transparent;color:inherit;cursor:pointer}
+.nav-open svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+.nav-open.on-test svg{width:22px;height:22px}
+.nav-panel{position:fixed;inset:0 0 0 auto;width:min(86vw,320px);max-width:none;height:100dvh;max-height:none;margin:0;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));border:0;border-inline-end:1px solid #dceaf4;border-radius:26px 0 0 26px;background:#fff;color:#22445a;box-shadow:-10px 0 30px #22445a26;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;direction:rtl;overflow-y:auto;transform:translateX(100%);transition:transform .2s ease-out}
+.nav-panel.in{transform:none}
+.nav-panel::backdrop{background:#22445a55}
+.nav-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 12px;border-bottom:1px solid #dceaf4}
+.nav-who{display:flex;align-items:center;gap:10px;min-width:0}.nav-who b{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:18px}
+.nav-close{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:14px;background:transparent;color:inherit;cursor:pointer}
+.nav-close svg,.nav-list svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-list{display:flex;flex-direction:column;gap:2px;margin:10px 0 0;padding:0;list-style:none}
+.nav-list a{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 12px;border-radius:14px;color:inherit;font-size:17px;font-weight:700;text-decoration:none}
+.nav-list a svg{color:#3f9a6c;flex:none}
+.nav-list a:hover{background:#f6fafc}
+.nav-list a.current{background:#edf6f0;color:#2c7a53}
+.nav-list a.locked{opacity:.5;cursor:default}.nav-lock{display:flex;margin-inline-start:auto}.nav-lock svg{width:18px;height:18px;color:#5c7285}
+.nav-list a:focus-visible,.nav-open:focus-visible,.nav-close:focus-visible{outline:3px solid #0284c7;outline-offset:2px}
+.nav-sep{height:1px;margin:8px 6px;background:#dceaf4}
+@media (prefers-reduced-motion:reduce){.nav-panel{transition:none}}
+@media print{.nav-open{display:none!important}}

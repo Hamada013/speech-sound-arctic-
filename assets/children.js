@@ -3,7 +3,7 @@
 ((root) => {
   const KEY = 'articulation-children-v1', AVATAR_KEY = 'articulation-account-avatars-v1';
   /* Each app's own store. Children made there before the shared list existed are brought in from these. */
-  const APPS = ['articulation-words', 'articulation-syllables', 'articulation-phrases', 'articulation-sentences', 'articulation-approaches'];
+  const APPS = ['articulation-words', 'articulation-syllables', 'articulation-phrases', 'articulation-sentences', 'articulation-stories', 'articulation-approaches'];
   const appKey = app => `${app}-children-v1`;
   const sameName = name => String(name || '').normalize('NFKC').replace(/[ً-ٰٟـ]/g, '').trim().toLocaleLowerCase();
   const newId = () => root.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;

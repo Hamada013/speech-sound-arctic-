@@ -1,5 +1,5 @@
 /* The reports page, on top of ../plan/plan.css (bar, cards, legends). Part colours are fixed everywhere:
-   test teal, syllables purple, words blue, phrases orange, sentences green, approaches magenta. */
+   test teal, syllables purple, words blue, phrases orange, sentences green, stories dark gold, approaches magenta. */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:4px 14px 4px 12px;border:1px solid var(--line);border-radius:22px;background:#fff;font-weight:700;font-size:15px}
 .chip i{width:12px;height:12px;border-radius:50%;background:var(--c)}

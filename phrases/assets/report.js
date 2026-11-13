@@ -5,7 +5,7 @@
 window.ArticulationReport = (() => {
   const Data = window.ArticulationData, Plan = window.ArticulationPlan;
   /* Colours follow the short goal everywhere and never change with what is shown. */
-  const COLORS = { say: '#6250d6', imitation: '#2a78d6', independent: '#eb6834', pairs: '#2a78d6', oppositions: '#eb6834', cycles: '#1baf7a' }, SOUND_COLOR = '#6250d6', PART = window.PartConfig || { id: 'phrases', name: 'العبارات' };
+  const COLORS = { say: '#6250d6', imitation: '#2a78d6', independent: '#eb6834', pairs: '#2a78d6', oppositions: '#eb6834', cycles: '#1baf7a', pages: '#6250d6', retell: '#eb6834' }, SOUND_COLOR = '#6250d6', PART = window.PartConfig || { id: 'phrases', name: 'العبارات' };
   const INK = '#22445a', MUTED = '#5c7285', FONT = 'system-ui,-apple-system,Segoe UI,Tahoma,Arial,sans-serif';
   const STATES = { done: ['تحقق الهدف', '#0ca30c'], close: ['قريب من الهدف', '#fab219'], working: ['قيد التدريب', '#fab219'], low: ['يحتاج تدريبًا', '#d03b3b'], none: ['لم يبدأ', '#c3c2b7'] };
   const SVG = 'http://www.w3.org/2000/svg';

@@ -5,18 +5,18 @@
    Needs assets/therapy.js (store keys, ids, sizes) and assets/children.js. */
 window.ArticulationResults = (() => {
   const T = window.ArticulationTherapy, Children = window.ArticulationChildren;
-  const COLORS = { test: '#0f9fb5', syllables: '#6250d6', words: '#2a78d6', phrases: '#eb6834', sentences: '#1baf7a', approaches: '#b5487a' };
+  const COLORS = { test: '#0f9fb5', syllables: '#6250d6', words: '#2a78d6', phrases: '#eb6834', sentences: '#1baf7a', stories: '#b8860b', approaches: '#b5487a' };
   const LEVELS = {
     test: [['first', 'أول الكلمة'], ['middle', 'وسط الكلمة'], ['last', 'آخر الكلمة']],
     syllables: [['cv', 'صامت ثم حركة'], ['vc', 'حركة ثم صامت'], ['vcv', 'حركة وصامت وحركة']],
     words: [['first', 'أول الكلمة'], ['middle', 'وسط الكلمة'], ['last', 'آخر الكلمة']],
-    phrases: [['say', 'العبارات']], sentences: [['say', 'الجمل']],
+    phrases: [['say', 'العبارات']], sentences: [['say', 'الجمل']], stories: [['pages', 'الصفحات'], ['retell', 'إعادة الحكي']],
     approaches: [['pairs', 'الأزواج الدنيا'], ['oppositions', 'المتقابلات'], ['cycles', 'الدورات']],
   };
-  const NAMES = { test: 'اختبار النطق', syllables: 'المقاطع', words: 'الكلمات', phrases: 'العبارات', sentences: 'الجمل', approaches: 'المناهج' };
+  const NAMES = { test: 'اختبار النطق', syllables: 'المقاطع', words: 'الكلمات', phrases: 'العبارات', sentences: 'الجمل', stories: 'القصص', approaches: 'المناهج' };
   const ORDER = Object.keys(T.WORD_IDS);
   const invert = map => Object.fromEntries(Object.entries(map).map(([letter, id]) => [String(id), letter]));
-  const BY_ID = { syllables: invert(T.SYLLABLE_IDS), words: invert(T.WORD_IDS), phrases: invert(T.WORD_IDS), sentences: invert(T.WORD_IDS) };
+  const BY_ID = { syllables: invert(T.SYLLABLE_IDS), words: invert(T.WORD_IDS), phrases: invert(T.WORD_IDS), sentences: invert(T.WORD_IDS), stories: invert(T.WORD_IDS) };
   const read = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
   const day = iso => T.today(new Date(iso));
   const mean = list => list.length ? list.reduce((a, b) => a + b, 0) / list.length : null;
@@ -79,7 +79,7 @@ window.ArticulationResults = (() => {
   }
   /* All parts for a child, in the app's order; parts without results are left out. */
   function all(childId) {
-    const parts = [testOf(childId), ...['syllables', 'words', 'phrases', 'sentences', 'approaches'].map(part => game(part, childId))];
+    const parts = [testOf(childId), ...['syllables', 'words', 'phrases', 'sentences', 'stories', 'approaches'].map(part => game(part, childId))];
     return parts.filter(p => p && p.sounds.length);
   }
   return { COLORS, NAMES, LEVELS, ORDER, all, game, testOf, mean, day };

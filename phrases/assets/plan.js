@@ -10,7 +10,7 @@ window.ArticulationPlan = (() => {
 
   /* A session only counts towards "reached" when every syllable of that type was graded. */
   function reached(child, sound, position) {
-    const whole = attemptsOf(child, sound, position).filter(entry => size(entry) === data.soundById(sound).words[position].length).slice(-STREAK);
+    const whole = attemptsOf(child, sound, position).filter(entry => size(entry) >= data.soundById(sound).words[position].length).slice(-STREAK);
     return whole.length === STREAK && whole.every(entry => percent(entry) >= TARGET);
   }
   const openPositions = (child, sound) => allPositions.filter(position => !reached(child, sound, position));
