@@ -14,9 +14,29 @@ function activeAssessment(){return activeChild()?.assessments.find(item=>item.id
 function caseDate(item){const d=item.state.meta.assessment||{};return [d.year,d.month?.padStart(2,'0'),d.day?.padStart(2,'0')].filter(Boolean).join('-')||item.createdAt.slice(0,10);}
 function caseDateLabel(item){return caseDate(item)+' · '+new Date(item.createdAt).toLocaleTimeString('ar-SY',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+(item.syncConflictOf?' · نسخة متزامنة':'');}
 function newAssessmentRecord(meta={}){const defaults=freshState();return {id:caseId(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),cursor:0,state:{...defaults,meta:{...defaults.meta,...meta,assessment:localToday()}}};}
+/* The app's one list of children (../assets/children.js): a child tested here is the same child in the games.
+   Linking never changes this test's own records or ids (Google sync keeps working); it only keeps the shared list and
+   the active child in step. Without the shared list (e.g. offline), the test works on its own. */
+const SharedChildren=globalThis.ArticulationChildren;
+function linkShared(child){
+ if(!SharedChildren||!child)return;
+ try{
+  const person=(child.sharedId&&SharedChildren.list().find(p=>p.id===child.sharedId))||SharedChildren.add(child.name);
+  SharedChildren.choose(person.id);
+  if(child.sharedId!==person.id){const latest=readCases(),own=latest.children.find(c=>c.id===child.id);if(own){own.sharedId=person.id;writeCases(latest);}}
+ }catch{}
+}
+/* Opening the test with a child chosen in the games opens that child's latest test, if there is one. */
+function followShared(){
+ const person=SharedChildren?.active();if(!person)return;
+ const match=cases.children.find(c=>c.sharedId===person.id)||cases.children.find(c=>SharedChildren.sameName(c.name)===SharedChildren.sameName(person.name));
+ const record=match?.assessments.at(-1);
+ if(record&&match.id!==cases.activeChild)writeCases({...cases,activeChild:match.id,activeAssessment:record.id});
+}
 function initializeCases(){
  try{
   cases=readCases();
+  try{followShared();}catch{}
   // Import the former draft once; remove its duplicate only after a successful save.
   if(!localStorage.getItem(CASE_KEY)&&saving){
    const record=newAssessmentRecord();record.state=copyCase(state);
@@ -46,6 +66,7 @@ function selectCase(childId,assessmentId){
  if(cases.activeChild&&!saveCase())return false;
  try{const latest=readCases(),child=latest.children.find(child=>child.id===childId),record=child?.assessments.find(item=>item.id===assessmentId)||child?.assessments.at(-1);if(!record)return false;
   if(!writeCases({...latest,activeChild:childId,activeAssessment:record.id}))return false;
+  linkShared(child);
   state=copyCase(record.state);state.meta.childName=child.name;selectedProbe=record.cursor||0;notePanels.clear();reportSourceId=null;comparisonSelection=null;renderMeta();renderTrials();refreshHome();return true;
  }catch{caseFailure();return false;}
 }
@@ -54,6 +75,7 @@ function createChild(name){
  if(cases.activeChild&&!saveCase())return false;
  try{const latest=readCases(),record=newAssessmentRecord({childName:name}),child={id:caseId(),name,createdAt:new Date().toISOString(),avatar:['leaf','star','heart','flower'][latest.children.length%4],assessments:[record]};
   if(!writeCases({...latest,children:[...latest.children,child],activeChild:child.id,activeAssessment:record.id}))return false;
+  linkShared(child);
   state=copyCase(record.state);selectedProbe=0;reportSourceId=null;comparisonSelection=null;renderMeta();renderTrials();refreshHome();return true;
  }catch{caseFailure();return false;}
 }

@@ -1,0 +1,53 @@
+/* The approaches part: three approach buttons on the home page, the pattern board, the cycle card, and the game screen
+   with two to four picture cards (warm flat style: cream paper, thin brown outlines). Home and windows come from
+   ../syllable/assets/styles.css; the counter dots, grades and next button from ../phrases/assets/tower.css. */
+.approach-actions{grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,620px)}
+.approach-actions .action{min-height:clamp(100px,18vh,150px);font-size:17px}
+@media (max-width:480px){.approach-actions{grid-template-columns:minmax(0,1fr);width:min(100%,300px)}.approach-actions .action{flex-direction:row;min-height:72px;gap:14px}.approach-actions .action svg{width:34px;height:34px}}
+.pattern-tag{min-width:52px;padding:2px 8px;border-radius:10px;background:#edf6f0;color:#2c7a53;font-size:18px;text-align:center}
+
+/* The pattern board and the cycle card. */
+.board-title{margin:0 0 10px;text-align:center;color:var(--ink);font-size:22px}
+.pattern-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;width:min(86vw,760px)}
+.pattern-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 4px 0 #c9dbe7;font-weight:700;color:var(--ink)}
+.pattern-tile b{font-size:26px;direction:rtl}.pattern-tile span{font-size:15px}
+.cycle-card{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:min(86vw,420px);padding:22px;text-align:center;color:var(--ink)}
+.cycle-card h2{margin:0;font-size:24px}.cycle-week{margin:0;color:var(--muted)}
+.cycle-target{font-size:72px;line-height:1.1}
+.cycle-start{width:84px;height:84px;border:4px solid var(--ink);background:#9fc378}.cycle-start svg{width:44px;height:44px;fill:var(--ink)}
+.cycle-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.cycle-tools button[aria-pressed=true]{background:#edf6f0;border-color:#62aa8c}
+
+/* The game screen. */
+.ap-stage{display:flex;flex-direction:column;background:#f6ecd8}
+.ap-stage .hud{position:relative;flex:none}
+.ap-dots i.say{border-radius:50%}
+.ap-top{flex:none;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;min-height:64px;padding:6px 12px}
+.ap-phase{display:grid;place-items:center;width:52px;height:52px;border:3px solid var(--ink);border-radius:16px;background:var(--cream)}
+.ap-phase::before{content:'';width:30px;height:30px;background:var(--ink);mask:var(--icon) center/contain no-repeat;-webkit-mask:var(--icon) center/contain no-repeat}
+.ap-phase[data-kind=listen]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 10a6 6 0 1 1 12 0c0 4-4 4-4 8a4 4 0 0 1-8 0M10 10a2 2 0 0 1 4 0c0 2-4 2-4 5'/%3E%3C/svg%3E")}
+.ap-phase[data-kind=say]{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M20 11c0 5-4 8-8 8H8l-5 3 1-6a8 8 0 1 1 16-5Z'/%3E%3Cpath d='M8 9.5h8M8 13h5'/%3E%3C/svg%3E")}
+.ap-speaker{width:60px;height:60px;border:3px solid var(--ink);background:var(--cream);box-shadow:none}.ap-speaker svg{width:30px;height:30px}
+.ap-say{padding:6px 12px;border:2px dashed #b98454;border-radius:12px;background:#fffaf0;font-weight:800;font-size:18px;color:var(--ink)}
+.ap-hint{color:var(--muted);font-size:15px}
+/* Two to four cards in a row, as big as the screen allows. */
+.ap-cards{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,28px);padding:8px 14px}
+.ap-card{--size:min(calc((100vw - 60px) / var(--n,2) - 12px),calc(100dvh - 250px),300px);position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;width:var(--size);padding:8px;border:4px solid var(--ink);border-radius:24px;background:#fffaf0;box-shadow:0 6px 0 #d9c4a0;transition:transform .25s,box-shadow .25s}
+.ap-card img{display:block;width:100%;aspect-ratio:1;border-radius:16px;background:#fff}
+.ap-word{font-size:clamp(16px,2.6vw,24px);font-weight:800;color:var(--ink)}
+.ap-card.lift{transform:translateY(-14px) scale(1.04);box-shadow:0 0 0 6px #f0b63b,0 16px 0 #d9c4a0}
+.ap-card.right{box-shadow:0 0 0 7px #9fc378,0 6px 0 #d9c4a0}
+.ap-card.wrong{animation:ap-shake .45s}
+/* The listener heard the other word: that picture jumps up, puzzled. */
+.ap-card.oops{z-index:3;animation:ap-oops 1.4s ease-in-out}
+.ap-card.oops::after{content:'؟';position:absolute;top:-30px;inset-inline-end:-14px;display:grid;place-items:center;width:52px;height:52px;border:3px solid var(--ink);border-radius:50%;background:#f3c27a;font-size:32px;font-weight:900;color:var(--ink)}
+@keyframes ap-shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes ap-oops{0%{transform:none}20%{transform:translateY(-30px) scale(1.18) rotate(-6deg)}40%{transform:translateY(-30px) scale(1.18) rotate(6deg)}60%{transform:translateY(-30px) scale(1.18) rotate(-4deg)}100%{transform:none}}
+.ap-bottom{flex:none;display:flex;justify-content:center;min-height:max(20px,env(safe-area-inset-bottom));padding:0 14px max(12px,env(safe-area-inset-bottom))}
+.ap-grades{width:min(100%,420px)}.ap-grades .grade{min-height:60px}
+/* The cycles' listening slideshow. */
+.ap-show{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.ap-show{position:relative;gap:4px}.ap-show-card{--size:min(70vw,calc(100dvh - 300px),300px)}.ap-count{color:var(--muted);font-weight:700}
+/* Skip sits in the bottom corner, so the picture keeps the middle of the screen. */
+#ap-show-skip{position:absolute;bottom:max(10px,env(safe-area-inset-bottom));left:max(12px,env(safe-area-inset-left));min-height:48px;padding:6px 18px}
+@media (orientation:landscape) and (max-height:520px){.ap-show-card{--size:min(40vw,calc(100dvh - 200px))}.ap-top{min-height:48px;padding-block:2px}.ap-phase{width:42px;height:42px}.ap-speaker{width:48px;height:48px}.ap-card{--size:min(calc((100vw - 60px) / var(--n,2) - 12px),calc(100dvh - 235px),260px)}}
+@media (prefers-reduced-motion:reduce){.ap-card{transition:none}}

@@ -33,6 +33,13 @@
       if (fresh && store.active === null && data.active && store.children.some(entry => entry.id === data.active)) { store.active = data.active; changed = true; }
       if (local) try { storage.setItem(appKey(app), JSON.stringify(data)); } catch {}
     }
+    /* Children tested in the articulation test (its own records, read only): each joins once, by its shared id or name. */
+    const tested = read(storage, 'articulation-cases-v2');
+    if (tested?.version === 2 && Array.isArray(tested.children)) for (const child of tested.children) {
+      const id = child.sharedId || child.id;
+      if (!child?.name || store.deletedChildren?.[id]) continue;
+      if (!store.children.some(entry => entry.id === id || sameName(entry.name) === sameName(child.name))) { store.children.push(person({ id, name: child.name, created: child.createdAt })); changed = true; }
+    }
     return changed;
   }
 

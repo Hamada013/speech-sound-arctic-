@@ -114,7 +114,7 @@
  function request(child){
   if(!child)return;
   if(!dialog){dialog=document.createElement('dialog');dialog.id='delete-account-dialog';dialog.className='suite-dialog';dialog.setAttribute('aria-labelledby','delete-account-title');dialog.innerHTML='<h2 id="delete-account-title">حذف الحساب</h2><p data-delete-message></p><div class="suite-text-actions"><button type="button" data-delete-confirm>نعم، حذف الحساب</button><button type="button" data-delete-back>عودة</button></div><p role="alert"></p>';document.body.append(dialog);dialog.querySelector('[data-delete-back]').onclick=()=>dialog.close();}
-  dialog.querySelector('[data-delete-message]').textContent=`هل أنت متأكد أنك تريد حذف حساب «${child.name}» وتقدّمه في كل أجزاء التطبيق على هذا الجهاز؟`;dialog.querySelector('[role=alert]').textContent='';
+  dialog.querySelector('[data-delete-message]').textContent=`هل أنت متأكد أنك تريد حذف حساب «${child.name}» وتقدّمه في الألعاب على هذا الجهاز؟ نتائج اختبار النطق تبقى محفوظة في الاختبار.`;dialog.querySelector('[role=alert]').textContent='';
   dialog.querySelector('[data-delete-confirm]').onclick=()=>{let ok=false;try{ok=remove(localStorage,child.id);}catch{}if(ok){dialog.close();location.reload();}else dialog.querySelector('[role=alert]').textContent='تعذّر حذف الحساب. حاول مجددًا.';};
   dialog.showModal();dialog.querySelector('[data-delete-back]').focus();
  }

@@ -1,0 +1,13 @@
+# المناهج (approaches)
+
+The phonological and contrast approaches, for a child's error patterns: minimal pairs, maximal and multiple oppositions, and Hodson cycles. The home page has three buttons, one per approach; goals, the therapist switch (013), accounts and the report work as in the other parts.
+
+**Goals.** A long goal is an error pattern (12: fronting, backing, stopping, de-emphasis, ر gliding, interdentals, pharyngeals, ش→س, ج, devoicing, final and initial consonant deletion). Its short goals are the approaches used on it. An approach opens straight on the one goal pattern that uses it; with several or none, the pattern board asks. Reached means 80% in two full sessions in a row.
+
+**Pairs and oppositions.** Five listening turns: the app says one word (the words part's recording when there is one; otherwise a dashed note shows the adult what to say) and the child taps its picture. Then five saying turns: one picture lifts, the child says it, and the listener taps the picture they heard. The other picture means a misunderstanding: it jumps up with a «؟», and the child tries once more. Scores: listening 1 or 0; saying 1 first time, 0.5 after the second try, 0 otherwise. Pairs use the pattern's minimal pairs (made-up words fill the gaps; they show a silly creature). Oppositions use multiple-opposition sets (one error sound against several targets) or, when the pattern has none, maximal pairs.
+
+**Cycles.** The goal patterns that use cycles take turns, one pattern and one target sound a week, then the cycle starts again. A session: the listening list (15 words from the words part, with their recordings), five words to say (graded), and a short listening list again. With the switch on, the cycle card lets the therapist move to the next pattern or hold the week.
+
+**Recordings.** `sounds/README.txt` lists every word to record (family words the words part has not recorded, and every made-up word) with its file name; `node approaches/scripts/recordings.cjs` rewrites it and `assets/recordings.js`, keeps each word's number for good and marks the recorded ones. Words the words part has recorded use its recordings. Until a word is recorded, a dashed note shows the adult what to say.
+
+**Files.** `assets/data.js` the patterns, consonant features and word families (`node scripts/review.cjs` writes `review.txt` for the therapist); `assets/pictures.js` a picture for every word; `assets/adapter.js` describes the part for the shared plan and report (patterns as sounds, approaches as levels); `assets/app.js` the screens; `assets/game.css`. The plan, report, sound player and stage styles come from `../phrases/assets/`, the words and recordings from `../words/`.

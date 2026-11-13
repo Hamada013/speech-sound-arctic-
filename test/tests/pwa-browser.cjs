@@ -7,7 +7,7 @@ const assert = require('node:assert/strict');
 const os = require('node:os');
 const { chromium, webkit } = require(process.env.ARTICULATION_PLAYWRIGHT || 'playwright');
 const root = path.resolve(__dirname, '..');
-const prefix = '/speech-website/forms/speech/articulation/';
+const prefix = '/speech-sound-arctic-/test/';
 const overrides = new Map();
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
 const server = http.createServer((req, res) => {

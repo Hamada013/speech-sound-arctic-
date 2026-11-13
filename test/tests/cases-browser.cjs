@@ -1,7 +1,7 @@
 // Real browser coverage: cases, history, comparison, responsive workplace and PDF.
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {chromium,webkit}=require(process.env.ARTICULATION_PLAYWRIGHT||'playwright');
-const root=path.resolve(__dirname,'..'),prefix='/forms/speech/articulation/';
+const root=path.resolve(__dirname,'..'),prefix='/test/';
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.webp':'image/webp','.webmanifest':'application/manifest+json'};
 const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost'),relative=decodeURIComponent(url.pathname).slice(prefix.length)||'index.html',file=path.resolve(root,relative);if(!url.pathname.startsWith(prefix)||!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(fs.readFileSync(file));});
 let browser;

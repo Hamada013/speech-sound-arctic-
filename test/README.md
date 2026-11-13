@@ -1,5 +1,12 @@
 # اختبار النطق
 
+**Part of the articulation app** (moved here with its history from the speech website's `forms/speech/articulation` on 2026-11-13). The home page's first card opens it, and its top bar has the home icon like every part.
+
+- **One child, everywhere:** choosing or creating a child here also adds them to the app's shared list (`../assets/children.js`) and makes them the active child; opening the test with a child chosen in the games opens that child's latest test. This app's own records, ids and Google sync are unchanged (each test child remembers its shared id as `sharedId`). Children tested before join the shared list once. Deleting a child from the games' accounts never deletes their assessments.
+- **Research tools stay in the speech website:** the research server, the research and Ling workbook builders, the cloud collector function and their tests are shared with the Ling and aphasia forms, so they were not moved. The in-app research export still works; the local research bridge works when the website's research server serves the page.
+- **Firebase:** `cloud/config.json` keeps the website's project; add this app's web address to its authorized sign-in domains for Google sync to work here.
+
+
 A standalone Arabic speech sound screening PWA. Serve the complete folder over HTTPS, or localhost during development. The manifest supports installation under a nested path and includes regular/maskable icons and phone/desktop screenshots. The offline assessment needs no external fonts or runtime CDN. Optional Google account sync loads the Firebase SDK when needed. Local workbook updates use a loopback service.
 
 ## Child accounts and assessment history
@@ -39,14 +46,14 @@ Upload the **entire folder**, including worker, manifest, release, scripts/style
 After changing shipped files:
 
 ```sh
-node forms/speech/articulation/scripts/build-pwa.cjs
-node forms/speech/articulation/scripts/build-pwa.cjs --check
-node forms/speech/articulation/tests/screener.test.cjs
-node forms/speech/articulation/tests/dropdowns.test.cjs
-node forms/speech/articulation/tests/browser.test.cjs
-node forms/speech/articulation/tests/cases-browser.cjs
-APP_ENGINE=webkit node forms/speech/articulation/tests/cases-browser.cjs
-node forms/speech/articulation/tests/pwa-browser.cjs
+node test/scripts/build-pwa.cjs
+node test/scripts/build-pwa.cjs --check
+node test/tests/screener.test.cjs
+node test/tests/dropdowns.test.cjs
+node test/tests/browser.test.cjs
+node test/tests/cases-browser.cjs
+APP_ENGINE=webkit node test/tests/cases-browser.cjs
+node test/tests/pwa-browser.cjs
 ```
 
 The suites use installed Chrome/Chromium and WebKit. They check isolation, autosave/reload, history, comparison, complete reports, PDF output, deletion, storage failure, cross-tab deletion, five viewport sizes, manifest/installability, every offline asset, all 84 pictures, updates and failed-release recovery. Also check native installation, print/share and pagination on intended devices.
@@ -67,10 +74,10 @@ The report share icon updates a cumulative local Excel workbook on the computer 
 Additional checks:
 
 ```sh
-node forms/speech/articulation/tests/research.test.cjs
-node forms/speech/articulation/tests/research-server.test.cjs
-node forms/speech/articulation/tests/research-browser.cjs
-APP_ENGINE=webkit node forms/speech/articulation/tests/research-browser.cjs
+node test/tests/research.test.cjs
+node test/tests/research-server.test.cjs
+node test/tests/research-browser.cjs
+APP_ENGINE=webkit node test/tests/research-browser.cjs
 ```
 
 ## Optional Google account and device syncing
