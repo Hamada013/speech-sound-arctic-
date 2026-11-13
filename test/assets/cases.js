@@ -1,7 +1,11 @@
 'use strict';
 // Independent local cases. Write a child record only; never clear another app's data.
 let CASE_KEY='articulation-cases-v2';
-try{const uid=localStorage.getItem('articulation-cloud-owner');if(uid)CASE_KEY='articulation-cases-google-'+uid;}catch{}
+/* The Google account was removed (2026-11-14). Tests saved under a signed-in account come back into the device's own
+   list once: children it does not have yet are added, then the account marker is cleared. */
+try{const uid=localStorage.getItem('articulation-cloud-owner');if(uid){const from=JSON.parse(localStorage.getItem('articulation-cases-google-'+uid)||'null'),into=JSON.parse(localStorage.getItem(CASE_KEY)||'null')||{version:2,children:[],activeChild:null,activeAssessment:null};
+ if(from?.version===2&&Array.isArray(from.children)){for(const child of from.children)if(!into.children.some(c=>c.id===child.id))into.children.push(child);if(!into.activeChild){into.activeChild=from.activeChild;into.activeAssessment=from.activeAssessment;}localStorage.setItem(CASE_KEY,JSON.stringify(into));}
+ localStorage.removeItem('articulation-cloud-owner');}}catch{}
 const caseId=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 const copyCase=value=>JSON.parse(JSON.stringify(value));
 function emptyCases(){return {version:2,children:[],activeChild:null,activeAssessment:null};}

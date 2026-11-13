@@ -54,7 +54,6 @@ async function run(type, name) {
     const page = await context.newPage(); page.setDefaultTimeout(10000);
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     const base = `http://127.0.0.1:${port}` + encodeURI(prefix);
-    await page.addLocatorHandler(page.locator('#cloudDialog[open]'),()=>page.locator('#skipCloud').click());
  await page.goto(base + 'index.html');
     await ready(page);
     const manifest = await page.evaluate(async () => {

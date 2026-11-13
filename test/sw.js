@@ -49,10 +49,11 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || !url.href.startsWith(BASE)) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
   const key = url.origin + url.pathname;
   const isEntry = request.mode === 'navigate' && (key === BASE || key === INDEX);
-  if (!isEntry && !FILES.has(key)) return;
+  /* The app's shared files one folder up: the network, else the whole app's caches (../sw.js). */
+  if (!isEntry && !FILES.has(key)) { event.respondWith(fetch(request).catch(async () => (await caches.match(key)) || new Response('', { status: 503, statusText: 'Offline' }))); return; }
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     return (await cache.match(isEntry ? INDEX : key)) || fetch(request);

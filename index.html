@@ -3,9 +3,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff"><meta name="description" content="تطبيقات النطق بالعربية للأطفال: المقاطع والكلمات، ثم العبارات والجمل والقصص.">
 <title>تدريب النطق</title>
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css">
-<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script><script src="assets/therapy.js" defer></script><script src="assets/nav.js" defer></script>
+<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script><script src="assets/therapy.js" defer></script><script src="assets/results.js" defer></script><script src="assets/nav.js" defer></script>
 <style>
 :root{--ink:#22445a;--muted:#5c7285;--line:#dceaf4;--green:#3f9a6c}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}[hidden]{display:none!important}
@@ -18,15 +18,6 @@ header{display:flex;justify-content:flex-start;align-items:center;gap:4px;paddin
 .nav-open{color:var(--ink)}#account{margin-inline-start:auto}.reports-link{display:flex;align-items:center;gap:6px;min-height:44px;padding:3px 14px;border:1px solid var(--line);border-radius:22px;background:#fff;font-weight:700;color:inherit;text-decoration:none}.reports-link svg{width:22px;height:22px;color:var(--green)}
 .account>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}#account-face{display:flex;flex:none}
 .account .no-face{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#edf6f0;color:var(--green)}.account .no-face svg{width:22px;height:22px}
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:16px}
-.hero{text-align:center}.hero img{width:clamp(84px,17vh,130px);height:auto}.hero h1{margin:6px 0 0;font-size:clamp(28px,5vh,38px)}.hero p{margin:2px 0 0;color:var(--muted)}
-/* The ready parts two by two, then the one still to come, smaller and centred under them. */
-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;width:min(100%,560px)}
-nav .app{grid-column:span 3}nav .app.test-card{grid-column:1 / -1;flex-direction:row;gap:14px;min-height:84px}nav .app.test-card small{margin-inline-start:6px}nav .app.later{grid-column:span 3;min-height:108px;padding:12px 6px;font-size:17px;gap:6px}nav .app.later svg{width:34px;height:34px}
-.app{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:132px;padding:18px 12px;border:1px solid var(--line);border-radius:28px;background:#fff;box-shadow:0 8px 22px #2a547012;color:inherit;text-decoration:none;font-size:20px;font-weight:700}
-a.app:active{transform:scale(.97)}.app svg{width:44px;height:44px;color:var(--green)}
-.app.later{box-shadow:none;background:#fbfdfe;color:var(--muted)}.app.later svg{color:#9fb3c2}
-.app small{font-weight:400;font-size:13px;color:var(--muted)}.app.later small{padding:1px 10px;border-radius:10px;background:#eef4f8}
 footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--muted);direction:ltr}footer p{margin:1px 0}footer a{color:inherit}
 /* The accounts window, as in the apps. */
 .sheet{width:min(calc(100vw - 24px),520px);max-height:calc(100dvh - 24px);padding:12px 18px 20px;border:1px solid var(--line);border-radius:24px;color:var(--ink);background:#fff;overflow-y:auto}.sheet::backdrop{background:#22445a66}
@@ -37,30 +28,63 @@ footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;
 .heroes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hero-pick{display:flex;flex-direction:column;align-items:center;padding:8px;border:2px solid var(--line);border-radius:18px;cursor:pointer}.hero-pick input{position:absolute;opacity:0}.hero-pick:has(input:checked){border-color:#62aa8c;background:#edf6f0}.hero-pick:has(input:focus-visible){outline:3px solid #0284c7}
 .error{margin:8px 0;color:#a43c38;font-size:15px;min-height:1.4em}
 .primary{min-height:52px;padding:10px 26px;border:0;border-radius:18px;background:var(--green);color:#fff;font-weight:700;font-size:18px}
+/* The home page, redesigned 2026-11-14: a greeting with the child's face, today's session as a coloured card, and the
+   parts as tiles in their fixed colours (the same as in the reports), each with its latest score as a thin bar.
+   Tiles rise in one after another, press with a small bounce, and pages fade into each other (assets/nav.css). */
+main{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;width:min(100%,640px);margin:0 auto;padding:8px 16px 16px}
+.hero{display:flex;align-items:center;gap:14px;width:100%;padding:4px 2px}
+.hero-face{display:grid;place-items:center;width:68px;height:68px;flex:none;border-radius:24px;background:#fff;box-shadow:0 8px 20px #2a54701f;overflow:hidden}
+.hero-face img{width:56px;height:auto}.hero-face .suite-avatar,.hero-face>span{transform:scale(1.25)}
+.hero p{margin:0;color:var(--muted);font-size:15px}.hero h1{margin:0;font-size:clamp(26px,4.2vh,34px);line-height:1.2}
+nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.app{--c:#3f9a6c;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:128px;padding:14px 14px 28px;border-radius:26px;background:color-mix(in srgb,var(--c) 9%,#fff);box-shadow:0 8px 22px color-mix(in srgb,var(--c) 14%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--c) 16%,transparent);color:inherit;text-decoration:none;overflow:hidden;transition:transform .2s cubic-bezier(.3,1.6,.5,1),box-shadow .2s;-webkit-tap-highlight-color:transparent}
+.app::after{content:'';position:absolute;inset:auto -30px -50px auto;width:120px;height:120px;border-radius:50%;background:color-mix(in srgb,var(--c) 10%,transparent);pointer-events:none}
+.app-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:18px;background:var(--c);color:#fff;box-shadow:0 6px 14px color-mix(in srgb,var(--c) 35%,transparent)}
+.app-icon svg{width:30px;height:30px;color:#fff}
+.app-text{display:flex;flex-direction:column;gap:1px}.app-text b{font-size:19px}.app-text small{font-size:13px;color:var(--muted)}
+.app-bar{position:absolute;inset:auto 14px 12px 14px;height:6px;border-radius:3px;background:color-mix(in srgb,var(--c) 14%,#fff)}.app-bar i{display:block;height:100%;width:var(--p,0%);border-radius:3px;background:var(--c);transition:width .9s cubic-bezier(.2,.9,.3,1)}
+.app-bar[hidden]{display:none}.app-score{position:absolute;top:14px;left:14px;font-size:13px;font-weight:800;color:var(--c)}
+.app.test-card{grid-column:1 / -1;flex-direction:row;align-items:center;min-height:96px;gap:14px}.app.test-card .app-bar{inset-inline-start:84px}
+a.app:hover{transform:translateY(-3px)}a.app:active{transform:scale(.96)}a.app:active .app-icon{transform:rotate(-6deg) scale(1.06)}.app-icon{transition:transform .2s}
+nav .app.locked{opacity:.45;filter:saturate(.3)}nav .app.locked .app-score{display:none}
+@media (prefers-reduced-motion:no-preference){
+ .hero,.today,nav .app{animation:home-rise .55s cubic-bezier(.2,.9,.3,1) both}
+ .today{animation-delay:.05s}nav .app:nth-child(1){animation-delay:.08s}nav .app:nth-child(2){animation-delay:.13s}nav .app:nth-child(3){animation-delay:.18s}nav .app:nth-child(4){animation-delay:.23s}nav .app:nth-child(5){animation-delay:.28s}nav .app:nth-child(6){animation-delay:.33s}nav .app:nth-child(7){animation-delay:.38s}
+ .hero-face{animation:home-rise .55s both,face-wave 3.5s 1s ease-in-out infinite}
+}
+@keyframes home-rise{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes face-wave{0%,80%,100%{transform:none}86%{transform:rotate(-6deg)}93%{transform:rotate(5deg)}}
+@media (min-width:760px){main{width:min(100%,900px)}nav{grid-template-columns:repeat(3,1fr)}.app.test-card{grid-column:1 / -1}}
+@media (orientation:landscape) and (max-height:520px){main{gap:10px;padding-block:4px;width:min(100%,980px)}.hero{display:none}nav{grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.app,.app.test-card{grid-column:auto;flex-direction:column;align-items:center;text-align:center;min-height:104px;padding:10px 6px 16px;gap:6px}.app-icon{width:42px;height:42px;border-radius:14px}.app-icon svg{width:24px;height:24px}.app-text b{font-size:15px}.app-text small{display:none}.app-bar{inset:auto 8px 7px 8px;height:4px}.app.test-card .app-bar{inset-inline-start:8px}.app-score{display:none}}
+/* «حفظ دون إنترنت»: one card saves the whole app (sw.js). */
+.offline{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:22px;background:#fff}
+.offline-icon{display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:15px;background:#edf6f0;color:var(--green)}.offline-icon svg{width:24px;height:24px}
+.offline-text{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}.offline-text b{font-size:16px}.offline-text small{font-size:13px;color:var(--muted)}
+.offline-text progress{width:100%;height:8px;accent-color:var(--green)}
+.offline-go{min-height:44px;padding:6px 18px;border:0;border-radius:14px;background:var(--green);color:#fff;font-weight:700}.offline-go:disabled{opacity:.5}
+.offline.saved .offline-icon{background:var(--green);color:#fff}
 /* Today's session (with a plan, assets/therapy.js): two or three activities, the next one in gold, stars when done,
    and the last two weeks as small squares. Parts outside the plan look locked until the therapist opens them (013). */
-.today{width:min(100%,560px);padding:14px;border:1px solid var(--line);border-radius:26px;background:#fff;box-shadow:0 8px 22px #2a547012}
+.today{width:100%;padding:16px;border-radius:28px;background:linear-gradient(135deg,#3f9a6c,#2f7d8f);color:#fff;box-shadow:0 14px 30px #2f7d8f40}.today .today-head h2{color:#fff}.today-time{background:#ffffff2e!important;color:#fff!important}.today-head .icon{color:#fff!important}#unlock[aria-pressed=true]{background:#ffffff2e!important;color:#fff!important}
 .today-head{display:flex;align-items:center;gap:4px;margin-bottom:10px}.today-head h2{margin:0 0 0 6px;font-size:20px}.today-head .grow{flex:1}
 .today-time{padding:2px 10px;border-radius:10px;background:#eef4f8;color:var(--muted);font-size:13px;font-weight:700}
 .today-head .icon{color:var(--ink);text-decoration:none}#unlock[aria-pressed=true]{background:#edf6f0;color:var(--green)}
 .today-list{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
-.task{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;min-height:108px;padding:10px 6px 8px;border:2px solid var(--line);border-radius:20px;background:#fbfdfe;text-align:center}
+.task{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;min-height:108px;padding:10px 6px 8px;border:2px solid transparent;border-radius:20px;background:#ffffffeb;color:var(--ink);text-align:center;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}.task:active{transform:scale(.95)}
 .task svg.part{width:24px;height:24px;color:var(--green)}.task b{font-size:34px;line-height:1.15}.task b.long{font-size:18px;line-height:2.1}.task small{font-size:12px;line-height:1.3;color:var(--muted)}
 .task .star{position:absolute;top:6px;left:6px;width:22px;height:22px;fill:#eef3f7;stroke:#c3d2dc;stroke-width:1.4}
 .task.done{border-color:#cfe8d9;background:#f3faf6}.task.done .star{fill:#f0b63b;stroke:#b27b10}
 .task.next{border-color:#f0b63b;background:#fff;box-shadow:0 0 0 4px #f0b63b33}
 .today-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
-#today-go,#today-more{display:inline-flex;align-items:center;gap:8px}#today-go svg{width:22px;height:22px;fill:#fff;stroke:#fff}
+#today-go,#today-more{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#2c7a53;box-shadow:0 6px 16px #0002}#today-go svg{width:22px;height:22px;fill:#2c7a53;stroke:#2c7a53}.today-end{color:#fff!important}.mini-days i{background:#ffffff40!important}.mini-days i[data-done="1"]{background:#bfe8cf!important}.mini-days i[data-done="2"]{background:#fff!important}.mini-days i.now{box-shadow:0 0 0 2px #fff!important}
 .today-end{margin:0;font-weight:700;color:var(--green)}
 .mini-days{display:grid;grid-template-columns:repeat(7,13px);gap:3px;flex:none}.mini-days i{width:13px;height:13px;border-radius:4px;background:#eef3f7}
 .mini-days i[data-done="1"]{background:#8fcaa9}.mini-days i[data-done="2"]{background:var(--green)}.mini-days i[data-started=true][data-done="0"]{background:#d6ecdf}.mini-days i.now{box-shadow:0 0 0 2px var(--ink)}
 nav .app.locked{opacity:.5;box-shadow:none}.lock-badge{position:absolute;top:10px;left:12px;display:flex}.lock-badge svg{width:20px;height:20px;color:var(--muted)}
-body.has-plan .hero img{width:clamp(56px,9vh,84px)}body.has-plan .hero p{display:none}body.has-plan nav .app{min-height:104px}
 #gate-form{display:flex;flex-direction:column;gap:8px}#gate-code{min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:14px;font:inherit;color:inherit;direction:ltr;text-align:center;letter-spacing:6px}
 .gate-row{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}.gate-row button:not(.primary){min-height:48px;padding:8px 18px;border:1px solid var(--line);border-radius:14px;background:#fff}
 @media (max-height:620px){footer{display:none}}
 /* Phones held sideways: a smaller title and all five parts in one row. */
-@media (orientation:landscape) and (max-height:520px){main{gap:12px;padding-block:8px}.hero img{width:60px}.hero h1{font-size:26px;margin:0}.hero p{display:none}nav{grid-template-columns:repeat(7,minmax(0,1fr));width:min(100%,960px)}nav .app,nav .app.later,nav .app.test-card{grid-column:auto;flex-direction:column;min-height:96px;font-size:17px;padding:10px 6px}nav .app svg{width:34px;height:34px}}
 @media (orientation:landscape) and (max-height:520px){body.has-plan .hero{display:none}.today{width:min(100%,960px);display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:center;padding:10px 14px}.today-head{grid-column:1 / -1;margin-bottom:6px}.task{min-height:84px;flex-direction:row;justify-content:center;gap:8px}.task b{font-size:30px}.today-foot{flex-direction:column;margin:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style><link rel="stylesheet" href="assets/nav.css">
@@ -70,7 +94,7 @@ body.has-plan .hero img{width:clamp(56px,9vh,84px)}body.has-plan .hero p{display
  <button id="account" class="account" type="button" aria-haspopup="dialog"><span id="account-none" class="no-face" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span id="account-face" hidden></span><span id="account-name">الحسابات</span></button>
 </header>
 <main>
- <section class="hero"><img src="assets/logo.webp" alt=""><h1>تدريب النطق</h1><p>مع حمادة</p></section>
+ <section class="hero"><span id="hero-face" class="hero-face"><img src="assets/logo.webp" alt=""></span><div><p id="hero-hello">مع حمادة</p><h1>تدريب النطق</h1></div></section>
  <section id="today" class="today" hidden aria-labelledby="today-title">
   <div class="today-head"><h2 id="today-title">تدريب اليوم</h2><span id="today-time" class="today-time"></span><span class="grow"></span>
    <a id="today-plan" class="icon" href="plan/index.html" aria-label="الخطة العلاجية" title="الخطة العلاجية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h4v-4h4v-4h4V8h4"/><path d="M19 8V3l3 1.5L19 6"/></svg></a>
@@ -79,14 +103,19 @@ body.has-plan .hero img{width:clamp(56px,9vh,84px)}body.has-plan .hero p{display
   <div class="today-foot"><button id="today-go" class="primary" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg><span>ابدأ</span></button><p id="today-end" class="today-end" hidden></p><button id="today-more" class="primary" type="button" hidden>تدريب ثانٍ</button><div id="today-days" class="mini-days" role="img"></div></div>
  </section>
  <nav aria-label="التطبيقات">
-  <a class="app test-card" href="test/index.html" data-part="test"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/></svg>اختبار النطق<small>قبل التدريب وبعده</small></a>
-  <a class="app" href="syllable/syllable.html" data-part="syllables"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg>المقاطع</a>
-  <a class="app" href="words/index.html" data-part="words"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>الكلمات</a>
-  <a class="app" href="phrases/index.html" data-part="phrases"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9v7H6l-3 3Z"/><path d="M12 9h9v7h-1v3l-3-3h-5Z"/></svg>العبارات</a>
-  <a class="app" href="sentences/index.html" data-part="sentences"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></svg>الجمل</a>
-  <a class="app" href="stories/index.html" data-part="stories"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-9-2v14c4 0 7 .5 9 2 2-1.5 5-2 9-2V4c-4 0-7 .5-9 2Zm0 0v14"/></svg>القصص</a>
-  <a class="app" href="approaches/index.html" data-part="approaches"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="8" height="14" rx="2"/><rect x="14" y="5" width="8" height="14" rx="2"/><path d="M11 12h2"/></svg>المناهج<small>الأزواج والدورات</small></a>
+  <a class="app test-card" href="test/index.html" data-part="test" style="--c:#0f9fb5"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/></svg></span><span class="app-text"><b>اختبار النطق</b><small>قبل التدريب وبعده</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="syllable/syllable.html" data-part="syllables" style="--c:#6250d6"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg></span><span class="app-text"><b>المقاطع</b><small>قطار المقاطع</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="words/index.html" data-part="words" style="--c:#2a78d6"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="app-text"><b>الكلمات</b><small>جزيرة الكلمات</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="phrases/index.html" data-part="phrases" style="--c:#eb6834"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9v7H6l-3 3Z"/><path d="M12 9h9v7h-1v3l-3-3h-5Z"/></svg></span><span class="app-text"><b>العبارات</b><small>برج العبارات</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="sentences/index.html" data-part="sentences" style="--c:#1baf7a"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></svg></span><span class="app-text"><b>الجمل</b><small>برج الجمل</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="stories/index.html" data-part="stories" style="--c:#b8860b"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-9-2v14c4 0 7 .5 9 2 2-1.5 5-2 9-2V4c-4 0-7 .5-9 2Zm0 0v14"/></svg></span><span class="app-text"><b>القصص</b><small>كتاب لكل صوت</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
+  <a class="app" href="approaches/index.html" data-part="approaches" style="--c:#b5487a"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="8" height="14" rx="2"/><rect x="14" y="5" width="8" height="14" rx="2"/><path d="M11 12h2"/></svg></span><span class="app-text"><b>المناهج</b><small>الأزواج والدورات</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
  </nav>
+ <section id="offline" class="offline" aria-labelledby="offline-title" hidden>
+  <span class="offline-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg></span>
+  <div class="offline-text"><b id="offline-title">التطبيق دون إنترنت</b><small id="offline-status"></small><progress id="offline-progress" max="100" value="0" hidden></progress></div>
+  <button id="offline-go" class="offline-go" type="button">حفظ</button>
+ </section>
 </main>
 <footer><p>SPEECH AND LANGUAGE PATHOLOGY</p><p><strong>Ahmad Ghanem</strong></p><p>Latakia - Syria</p><p><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></p></footer>
 
@@ -112,6 +141,18 @@ body.has-plan .hero img{width:clamp(56px,9vh,84px)}body.has-plan .hero p{display
 document.addEventListener('DOMContentLoaded', () => {
   const Children = window.ArticulationChildren, $ = id => document.getElementById(id);
   let next = null;
+  /* The greeting shows the child's face; each tile its part's latest score (assets/results.js). */
+  function drawHero() {
+    const child = Children.active();
+    $('hero-hello').textContent = child ? `مرحبًا ${child.name}` : 'مع حمادة';
+    $('hero-face').replaceChildren(child && window.SuiteAccounts ? window.SuiteAccounts.avatar(child, 'pick') : Object.assign(document.createElement('img'), { src: 'assets/logo.webp', alt: '' }));
+    const parts = child && window.ArticulationResults ? window.ArticulationResults.all(child.id) : [];
+    document.querySelectorAll('nav a.app[data-part]').forEach(link => {
+      const part = parts.find(p => p.part === link.dataset.part), bar = link.querySelector('.app-bar'), score = link.querySelector('.app-score');
+      bar.hidden = score.hidden = !part || part.percent == null;
+      if (part && part.percent != null) { score.textContent = `${part.percent}%`; requestAnimationFrame(() => bar.style.setProperty('--p', `${part.percent}%`)); }
+    });
+  }
   function drawAccount() {
     const child = Children.active();
     $('account-name').textContent = child ? child.name : 'الحسابات';
@@ -127,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   function choose(id) {
-    Children.choose(id); drawAccount(); drawToday(); $('accounts').close();
+    Children.choose(id); drawAccount(); drawToday(); drawHero(); $('accounts').close();
     const go = next; next = null; if (go) location.href = go;
   }
   async function open() {
@@ -198,8 +239,46 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom) return;
     next = null; $('accounts').close();
   });
-  window.addEventListener('pageshow', () => { Children.reload(); drawAccount(); drawToday(); });
-  drawAccount(); drawToday();
+  /* ---------- The whole app offline (sw.js) ---------- */
+  const mb = bytes => `${Math.round(bytes / 1048576)} MB`;
+  function ask(worker, type, progress) {
+    return new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = event => { const d = event.data; if (d.error) { channel.port1.close(); reject(Error(d.error)); } else if (type === 'STATUS' || d.complete) { channel.port1.close(); resolve(d); } else progress?.(d); };
+      worker.postMessage({ type }, [channel.port2]);
+    });
+  }
+  function showOffline(state, text) {
+    const done = state && state.saved >= state.total;
+    $('offline').classList.toggle('saved', !!done);
+    $('offline-status').textContent = text || (done ? 'محفوظ على هذا الجهاز ✓ يعمل دون اتصال.' : state ? `محفوظ ${digits(Math.floor(state.saved / state.total * 100))}% · أكمل الحفظ` : 'احفظ التطبيق كله على هذا الجهاز ليعمل دون اتصال (نحو ١٥٠ MB).');
+    $('offline-go').hidden = !!done; $('offline-go').textContent = state && state.saved ? 'أكمل' : 'حفظ';
+  }
+  const activeWorker = async () => { const reg = await navigator.serviceWorker.getRegistration('./'); return reg && new URL(reg.active?.scriptURL || reg.installing?.scriptURL || 'x:', location.href).pathname.endsWith('/sw.js') && reg.scope === new URL('./', location.href).href ? reg : null; };
+  async function offlineInit() {
+    if (!('serviceWorker' in navigator) || !isSecureContext) return;
+    $('offline').hidden = false; showOffline(null);
+    const reg = await activeWorker().catch(() => null);
+    if (!reg) return;
+    navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {});
+    if (reg.active) showOffline(await ask(reg.active, 'STATUS').catch(() => null));
+  }
+  $('offline-go').onclick = async () => {
+    const go = $('offline-go'), bar = $('offline-progress');
+    go.disabled = true; bar.hidden = false; bar.removeAttribute('value');
+    showOffline(null, 'جارٍ حفظ الصفحات…');
+    navigator.storage?.persist?.().catch(() => {});
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
+      const worker = reg.active || await new Promise((resolve, reject) => { const w = reg.installing || reg.waiting; w.addEventListener('statechange', () => { if (w.state === 'activated') resolve(w); if (w.state === 'redundant') reject(Error('تعذّر حفظ الصفحات. اتصل بالإنترنت ثم أعد المحاولة.')); }); });
+      const state = await ask(worker, 'DOWNLOAD', d => { bar.value = Math.floor(d.saved / d.total * 100); showOffline(null, `جارٍ حفظ التسجيلات والفيديو ${digits(bar.value)}%`); });
+      bar.hidden = true; showOffline(state);
+    } catch (error) { bar.hidden = true; showOffline(null, error.message); }
+    go.disabled = false;
+  };
+  void offlineInit();
+  window.addEventListener('pageshow', () => { Children.reload(); drawAccount(); drawToday(); drawHero(); });
+  drawAccount(); drawToday(); drawHero();
 });
 </script>
 </body></html>

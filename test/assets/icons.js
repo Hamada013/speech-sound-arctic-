@@ -5,6 +5,7 @@ const APP_ICONS = {
  google:'<path d="M21 12h-9m9 0a9 9 0 1 1-3-7m3 7c0 6-4 9-9 9"/>',
  logout:'<path d="M9 3H3v18h6m4-15 6 6-6 6m-6-6h14"/>',
  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 11 6-4m-6 6 6 4"/>',
+ testhome:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/>',
  home:'<path d="m3 10 9-7 9 7v10H5V10M9 21v-8h6v8"/>',
  accounts:'<circle cx="9" cy="8" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8m2 3a6 6 0 0 1 3 6"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',

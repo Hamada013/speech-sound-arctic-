@@ -12,7 +12,6 @@ let browser;
  const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce',serviceWorkers:'allow'});
  const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
  const url=`http://127.0.0.1:${server.address().port}${prefix}`;
- await page.addLocatorHandler(page.locator('#cloudDialog[open]'),()=>page.locator('#skipCloud').click());
  await page.goto(url);await page.locator('#welcomeLaunch').waitFor({state:'hidden'});
  assert(await page.locator('#home').isVisible());assert.equal(await page.locator('#exportText').count(),0);
  await page.locator('#homeAccounts').click();await page.locator('#caseName').fill('ليان <طفلة>');await page.locator('#createChildButton').click();

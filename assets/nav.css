@@ -19,3 +19,11 @@
 .nav-sep{height:1px;margin:8px 6px;background:#dceaf4}
 @media (prefers-reduced-motion:reduce){.nav-panel{transition:none}}
 @media print{.nav-open{display:none!important}}
+.nav-open{box-shadow:none!important;background:transparent!important;border:0!important;min-height:0}
+/* Moving between pages of the app: the old page fades back, the new one lifts in (browsers that support it). */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:app-page-out .2s ease-in both}
+::view-transition-new(root){animation:app-page-in .32s cubic-bezier(.2,.9,.3,1) both}
+@keyframes app-page-out{to{opacity:0;transform:scale(.985)}}
+@keyframes app-page-in{from{opacity:0;transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}

@@ -82,8 +82,6 @@ node test/tests/research-browser.cjs
 APP_ENGINE=webkit node test/tests/research-browser.cjs
 ```
 
-## Optional Google account and device syncing
+## No sign-in
 
-The launch dialog can be skipped; the home cloud icon opens it again. Firebase Google sign-in, independent local account spaces, private per-assessment cloud syncing, offline retry and concurrent-edit preservation are implemented in `assets/cloud.js` / `cloud-model.js`. The `cloud/` directory contains the public Firebase configuration and private per-user Firestore rules. The online research collector has been removed. Source identity columns and the `Accounts` research tab distinguish where submissions came from.
-
-The public `cloud/config.json` now identifies Firebase project `speech-apps-5d3b0`. Live sign-in and syncing still require the project's authentication providers, authorized domains, Firestore database and deployed rules; see [cloud setup](cloud/SETUP.md). These console settings and real-device syncing have not been verified. Report sharing uses local Excel only and is independent of personal Google account syncing.
+The Google account and device syncing were removed on 2026-11-14. Everything stays on the device. Tests saved earlier under a signed-in account are moved back into the device's own list the first time the test opens.

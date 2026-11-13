@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "تدريب النطق",
+  "short_name": "تدريب النطق",
+  "description": "تدريب النطق بالعربية للأطفال: الاختبار، المقاطع، الكلمات، العبارات، الجمل، القصص والمناهج، مع خطة علاجية وتقارير.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#ffffff",
+  "categories": ["education", "kids", "medical"],
+  "orientation": "any",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -43,14 +43,17 @@ async function rangeResponse(response,range){
  if(start>end||start>=data.byteLength)return invalid();
  return new Response(data.slice(start,end+1),{status:206,headers:{'Content-Type':response.headers.get('Content-Type'),'Content-Length':String(end-start+1),'Accept-Ranges':'bytes','Content-Range':`bytes ${start}-${end}/${data.byteLength}`}});
 }
+/* Anything else (the shared files one folder up), or a miss while offline, comes from the whole app's caches (../sw.js). */
+const shared=async request=>{const url=new URL(request.url);url.search='';url.hash='';const hit=await caches.match(url.href);if(!hit)throw Error('offline');return request.headers.has('Range')?rangeResponse(hit,request.headers.get('Range')):hit;};
 self.addEventListener('fetch',event=>{
- if(event.request.method!=='GET')return;const url=fullURL(event.request),entry=shell.get(url)||media.get(url);if(!entry)return;
+ if(event.request.method!=='GET')return;const url=fullURL(event.request),entry=shell.get(url)||media.get(url);
+ if(!entry){if(new URL(event.request.url).origin===self.location.origin)event.respondWith(fetch(event.request).catch(()=>shared(event.request)).catch(()=>new Response('',{status:503,statusText:'Offline'})));return;}
  event.respondWith((async()=>{
   let response;
   if(media.has(url)){await cacheMedia(url,entry);response=await(await caches.open(MEDIA_CACHE)).match(key(url,entry));}
   else{const cache=await caches.open(SHELL_CACHE);response=await cache.match(url);if(!response){response=await checked(url,entry);await cache.put(url,response.clone());}}
   return event.request.headers.has('Range')?rangeResponse(response,event.request.headers.get('Range')):response;
- })().catch(()=>new Response('المحتوى غير محفوظ. نزّله عند الاتصال بالإنترنت.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}})));
+ })().catch(()=>shared(event.request)).catch(()=>new Response('المحتوى غير محفوظ. نزّله عند الاتصال بالإنترنت.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}})));
 });
 self.addEventListener('message',event=>{
  if(!event.source?.url?.startsWith(BASE.href))return;
