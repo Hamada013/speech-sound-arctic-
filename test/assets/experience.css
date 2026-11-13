@@ -63,3 +63,6 @@ button.child-select{border:0;background:transparent;box-shadow:none;padding:8px;
 /* The way back to the app's home page, as in every part. */
 .header-controls a.app-home-link{display:grid;place-items:center;width:44px;height:44px;color:inherit;text-decoration:none}
 .header-controls a.app-home-link svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* The plan window: the sounds and patterns the plan will take from this assessment. */
+.plan-preview{display:grid;gap:8px;margin:6px 0 10px}.plan-preview div{display:flex;align-items:baseline;gap:12px;padding:10px 14px;border-radius:14px;background:#f4f9fc}
+.plan-preview dt{min-width:64px;color:#52676f;font-size:14px}.plan-preview dd{margin:0;font-weight:700;font-size:20px;letter-spacing:1px}

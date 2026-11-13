@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>الخطة العلاجية</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="stylesheet" href="../assets/accounts.css"><link rel="stylesheet" href="../assets/parent-gate.css"><link rel="stylesheet" href="plan.css">
+<script src="../assets/children.js" defer></script><script src="../assets/parent-gate.js" defer></script><script src="../assets/accounts.js" defer></script>
+<script src="../assets/therapy.js" defer></script><script src="plan.js" defer></script>
+</head><body>
+<header class="bar">
+ <a class="icon" href="../index.html" aria-label="الصفحة الرئيسية" title="الصفحة الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10M9 21v-8h6v8"/></svg></a>
+ <h1>الخطة العلاجية</h1>
+ <span class="bar-tools">
+  <button id="print" class="icon" type="button" aria-label="طباعة / حفظ PDF" title="طباعة / حفظ PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 17H3v-7h18v7h-3M7 14h10v7H7Z"/></svg></button>
+  <button id="therapist" class="icon" type="button" aria-label="وضع المعالج" title="وضع المعالج" aria-pressed="false"></button>
+ </span>
+</header>
+<main>
+ <section class="who"><span id="face"></span><div><h2 id="name">—</h2><p id="source"></p></div></section>
+
+ <section id="empty" class="card empty" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h4v-4h4v-4h4V8h4"/><path d="M19 8V3l3 1.5L19 6"/></svg>
+  <p id="empty-text">لا توجد خطة بعد. افتح تقرير اختبار النطق واضغط «الخطة العلاجية».</p>
+  <a class="primary" href="../test/index.html">اختبار النطق</a>
+ </section>
+
+ <div id="content" hidden>
+  <section class="card summary" aria-label="ملخص الخطة">
+   <figure class="ring-box"><svg id="ring" viewBox="0 0 100 100" aria-hidden="true"></svg><figcaption><b id="ring-text" dir="ltr"></b><span>مراحل منجزة</span></figcaption></figure>
+   <div class="stats">
+    <div class="stat"><b id="stat-sounds"></b><span>أصوات</span><i id="stat-letters" class="letters"></i></div>
+    <div class="stat"><b id="stat-patterns"></b><span>أنماط</span></div>
+    <div class="stat"><b id="stat-week"></b><span>تدريبات هذا الأسبوع</span></div>
+   </div>
+  </section>
+
+  <section class="card" aria-labelledby="ladder-title">
+   <div class="card-head"><h3 id="ladder-title">الأصوات ومراحلها</h3><button id="add-sound" class="pick tool" type="button" aria-haspopup="menu" hidden>إضافة صوت<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+   <div id="ladder" class="ladder" role="table" aria-label="كل صوت ومرحلته في كل جزء"></div>
+   <ul class="legend"><li><i class="k-done"></i>تمّ</li><li><i class="k-now"></i>يتدرّب الآن</li><li><i class="k-later"></i>لاحقًا</li><li><i class="k-skip"></i>لا يحتاجها</li></ul>
+  </section>
+
+  <section id="patterns-card" class="card" aria-labelledby="patterns-title">
+   <div class="card-head"><h3 id="patterns-title">الأنماط والمناهج</h3><button id="add-pattern" class="pick tool" type="button" aria-haspopup="menu" hidden>إضافة نمط<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+   <div id="patterns" class="patterns"></div>
+   <p id="patterns-none" class="muted" hidden>لا يشترك خطآن أو أكثر في نمط واحد.</p>
+  </section>
+
+  <section class="card" aria-labelledby="days-title">
+   <div class="card-head"><h3 id="days-title">أيام التدريب</h3><span id="days-note" class="muted"></span></div>
+   <div id="days" class="days"></div>
+   <ul class="legend"><li><i class="d-0"></i>لا تدريب</li><li><i class="d-s"></i>بدأ</li><li><i class="d-1"></i>تدريب</li><li><i class="d-2"></i>تدريبان</li></ul>
+   <div id="settings" class="settings tool" hidden>
+    <div><span>أنشطة كل تدريب</span><span class="seg" data-setting="activities"><button type="button" data-value="2">٢</button><button type="button" data-value="3">٣</button></span></div>
+    <div><span>تدريبات في اليوم</span><span class="seg" data-setting="perDay"><button type="button" data-value="1">١</button><button type="button" data-value="2">٢</button></span></div>
+   </div>
+  </section>
+
+  <details class="card detail"><summary>نتائج الاختبار التي بُنيت عليها الخطة</summary><div class="table-wrap"><table><thead><tr><th>الصوت</th><th>أول الكلمة</th><th>وسط الكلمة</th><th>آخر الكلمة</th></tr></thead><tbody id="results"></tbody></table></div></details>
+
+  <div class="tool end-tools" hidden><button id="delete-plan" class="danger" type="button">حذف الخطة</button></div>
+ </div>
+</main>
+
+<dialog id="gate" class="sheet" aria-labelledby="gate-title">
+ <form id="gate-form" method="dialog">
+  <h2 id="gate-title">وضع المعالج</h2>
+  <label for="gate-code">الرمز</label><input id="gate-code" type="password" inputmode="numeric" autocomplete="off" maxlength="6">
+  <p id="gate-error" class="error" role="alert" hidden>الرمز غير صحيح.</p>
+  <div class="row"><button type="button" id="gate-cancel">إلغاء</button><button class="primary" type="submit">فتح</button></div>
+ </form>
+</dialog>
+<dialog id="confirm" class="sheet" aria-labelledby="confirm-title">
+ <h2 id="confirm-title">حذف الخطة؟</h2><p>يبقى تقدّم الطفل في الأجزاء كما هو، وتُفتح كل الأجزاء.</p>
+ <div class="row"><button type="button" id="confirm-no">إلغاء</button><button type="button" id="confirm-yes" class="danger">حذف</button></div>
+</dialog>
+</body></html>

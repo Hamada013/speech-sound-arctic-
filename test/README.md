@@ -33,6 +33,8 @@ The download icon opens the browser's native **Print / Save PDF** interface with
 
 The comparison icon opens date cards to select two assessments. Blue identifies the earlier date and green the later date, with written labels. The report includes result distributions, per-sound accuracy, all item records side by side, and both assessments' clinical fields and process analysis. Paired accuracy change uses only items scored at both dates with the same word, reference, target phoneme and elicitation method. A dash means no scored items, rather than assumed zero accuracy.
 
+The plan icon (stairs) turns the assessment shown in the report into the child's intervention plan in the articulation app (`assets/plan-link.js` → `../assets/therapy.js`): it shows the sounds and shared patterns it found, then opens `../plan/`. The child is the same one the games use. Without the app's shared files (e.g. offline) the icon is hidden. See item 5 of `../docs/roadmap.md`.
+
 This remains an informal, non-standardized descriptive screener. Target accuracy is not PCC, a whole-word score, standardized severity or a diagnosis. The clinician supplies the conclusion. Dialect differences are not automatically treated as errors. Automatic indicators retain their original opportunity counts and separation of naming, imitation and context. See [LEVANTINE-REFERENCE.md](assets/LEVANTINE-REFERENCE.md) and [IMAGE-LIST.md](assets/images/IMAGE-LIST.md).
 
 ## Offline installation and updates

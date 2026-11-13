@@ -267,6 +267,7 @@ function finish() {
     attempts.forEach(entry => { const term = document.createElement('dt'), value = document.createElement('dd'); term.textContent = positionName(entry.zone); value.dir = 'ltr'; value.textContent = `${Plan.percent(entry)}%`; table.append(term, value); });
     result.append(total, table);
   }
+  window.ArticulationToday?.done('syllables', r.sound, r.positions);
   $('done').hidden = false;
 }
 
@@ -375,4 +376,9 @@ $('turn').onclick = () => { $('turn').hidden = true; };
 
 drawHome();
 if (!Children.list().length) { drawAccounts(); $('accounts').showModal(); }
+/* Opened from today's session (assets/today.js): the plan's sound and short goal start with one tap. */
+window.ArticulationToday?.offer('syllables', activity => {
+  const sound = soundById(window.ArticulationTherapy.PARTS.syllables.id(activity.letter));
+  if (sound && active()) { Sound.unlock(); startRun({ sound, positions: [activity.zone] }); }
+});
 window.SyllableTrain = { train: () => train, run, stations: () => stations };

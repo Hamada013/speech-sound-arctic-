@@ -280,6 +280,7 @@ async function finish() {
     const what = document.createElement('p'); what.textContent = soundById(r.sound).name;
     result.append(total, what);
   }
+  window.ArticulationToday?.done(PART.id, r.sound, [r.goal]);
   $('done').hidden = false;
 }
 
@@ -311,4 +312,9 @@ $('done-again').onclick = () => { const r = run(); startRun({ sound: soundById(r
 
 drawHome();
 if (!Children.list().length) { drawAccounts(); $('accounts').showModal(); }
+/* Opened from today's session (assets/today.js): the plan's sound and short goal start with one tap. */
+window.ArticulationToday?.offer(PART.id, activity => {
+  const sound = soundById(window.ArticulationTherapy.PARTS[PART.id].id(activity.letter));
+  if (sound && active()) { Sound.unlock(); startRun({ sound, positions: [activity.zone] }); }
+});
 window.PhraseTower = { tower: () => tower, run };

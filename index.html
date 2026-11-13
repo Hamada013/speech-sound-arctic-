@@ -5,7 +5,7 @@
 <title>تدريب النطق</title>
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css">
-<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script>
+<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script><script src="assets/therapy.js" defer></script>
 <style>
 :root{--ink:#22445a;--muted:#5c7285;--line:#dceaf4;--green:#3f9a6c}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}[hidden]{display:none!important}
@@ -36,9 +36,31 @@ footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;
 .heroes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hero-pick{display:flex;flex-direction:column;align-items:center;padding:8px;border:2px solid var(--line);border-radius:18px;cursor:pointer}.hero-pick input{position:absolute;opacity:0}.hero-pick:has(input:checked){border-color:#62aa8c;background:#edf6f0}.hero-pick:has(input:focus-visible){outline:3px solid #0284c7}
 .error{margin:8px 0;color:#a43c38;font-size:15px;min-height:1.4em}
 .primary{min-height:52px;padding:10px 26px;border:0;border-radius:18px;background:var(--green);color:#fff;font-weight:700;font-size:18px}
+/* Today's session (with a plan, assets/therapy.js): two or three activities, the next one in gold, stars when done,
+   and the last two weeks as small squares. Parts outside the plan look locked until the therapist opens them (013). */
+.today{width:min(100%,560px);padding:14px;border:1px solid var(--line);border-radius:26px;background:#fff;box-shadow:0 8px 22px #2a547012}
+.today-head{display:flex;align-items:center;gap:4px;margin-bottom:10px}.today-head h2{margin:0 0 0 6px;font-size:20px}.today-head .grow{flex:1}
+.today-time{padding:2px 10px;border-radius:10px;background:#eef4f8;color:var(--muted);font-size:13px;font-weight:700}
+.today-head .icon{color:var(--ink);text-decoration:none}#unlock[aria-pressed=true]{background:#edf6f0;color:var(--green)}
+.today-list{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.task{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;min-height:108px;padding:10px 6px 8px;border:2px solid var(--line);border-radius:20px;background:#fbfdfe;text-align:center}
+.task svg.part{width:24px;height:24px;color:var(--green)}.task b{font-size:34px;line-height:1.15}.task b.long{font-size:18px;line-height:2.1}.task small{font-size:12px;line-height:1.3;color:var(--muted)}
+.task .star{position:absolute;top:6px;left:6px;width:22px;height:22px;fill:#eef3f7;stroke:#c3d2dc;stroke-width:1.4}
+.task.done{border-color:#cfe8d9;background:#f3faf6}.task.done .star{fill:#f0b63b;stroke:#b27b10}
+.task.next{border-color:#f0b63b;background:#fff;box-shadow:0 0 0 4px #f0b63b33}
+.today-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+#today-go,#today-more{display:inline-flex;align-items:center;gap:8px}#today-go svg{width:22px;height:22px;fill:#fff;stroke:#fff}
+.today-end{margin:0;font-weight:700;color:var(--green)}
+.mini-days{display:grid;grid-template-columns:repeat(7,13px);gap:3px;flex:none}.mini-days i{width:13px;height:13px;border-radius:4px;background:#eef3f7}
+.mini-days i[data-done="1"]{background:#8fcaa9}.mini-days i[data-done="2"]{background:var(--green)}.mini-days i[data-started=true][data-done="0"]{background:#d6ecdf}.mini-days i.now{box-shadow:0 0 0 2px var(--ink)}
+nav .app.locked{opacity:.5;box-shadow:none}.lock-badge{position:absolute;top:10px;left:12px;display:flex}.lock-badge svg{width:20px;height:20px;color:var(--muted)}
+body.has-plan .hero img{width:clamp(56px,9vh,84px)}body.has-plan .hero p{display:none}body.has-plan nav .app{min-height:104px}
+#gate-form{display:flex;flex-direction:column;gap:8px}#gate-code{min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:14px;font:inherit;color:inherit;direction:ltr;text-align:center;letter-spacing:6px}
+.gate-row{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}.gate-row button:not(.primary){min-height:48px;padding:8px 18px;border:1px solid var(--line);border-radius:14px;background:#fff}
 @media (max-height:620px){footer{display:none}}
 /* Phones held sideways: a smaller title and all five parts in one row. */
 @media (orientation:landscape) and (max-height:520px){main{gap:12px;padding-block:8px}.hero img{width:60px}.hero h1{font-size:26px;margin:0}.hero p{display:none}nav{grid-template-columns:repeat(7,minmax(0,1fr));width:min(100%,960px)}nav .app,nav .app.later,nav .app.test-card{grid-column:auto;flex-direction:column;min-height:96px;font-size:17px;padding:10px 6px}nav .app svg{width:34px;height:34px}}
+@media (orientation:landscape) and (max-height:520px){body.has-plan .hero{display:none}.today{width:min(100%,960px);display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:center;padding:10px 14px}.today-head{grid-column:1 / -1;margin-bottom:6px}.task{min-height:84px;flex-direction:row;justify-content:center;gap:8px}.task b{font-size:30px}.today-foot{flex-direction:column;margin:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <header>
@@ -46,14 +68,21 @@ footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;
 </header>
 <main>
  <section class="hero"><img src="assets/logo.webp" alt=""><h1>تدريب النطق</h1><p>مع حمادة</p></section>
+ <section id="today" class="today" hidden aria-labelledby="today-title">
+  <div class="today-head"><h2 id="today-title">تدريب اليوم</h2><span id="today-time" class="today-time"></span><span class="grow"></span>
+   <a id="today-plan" class="icon" href="plan/index.html" aria-label="الخطة العلاجية" title="الخطة العلاجية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h4v-4h4v-4h4V8h4"/><path d="M19 8V3l3 1.5L19 6"/></svg></a>
+   <button id="unlock" class="icon" type="button" aria-pressed="false" aria-label="وضع المعالج: فتح كل الأجزاء" title="وضع المعالج"></button></div>
+  <ol id="today-list" class="today-list"></ol>
+  <div class="today-foot"><button id="today-go" class="primary" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg><span>ابدأ</span></button><p id="today-end" class="today-end" hidden></p><button id="today-more" class="primary" type="button" hidden>تدريب ثانٍ</button><div id="today-days" class="mini-days" role="img"></div></div>
+ </section>
  <nav aria-label="التطبيقات">
-  <a class="app test-card" href="test/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/></svg>اختبار النطق<small>قبل التدريب وبعده</small></a>
-  <a class="app" href="syllable/syllable.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg>المقاطع</a>
-  <a class="app" href="words/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>الكلمات</a>
-  <a class="app" href="phrases/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9v7H6l-3 3Z"/><path d="M12 9h9v7h-1v3l-3-3h-5Z"/></svg>العبارات</a>
-  <a class="app" href="sentences/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></svg>الجمل</a>
+  <a class="app test-card" href="test/index.html" data-part="test"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/></svg>اختبار النطق<small>قبل التدريب وبعده</small></a>
+  <a class="app" href="syllable/syllable.html" data-part="syllables"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg>المقاطع</a>
+  <a class="app" href="words/index.html" data-part="words"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>الكلمات</a>
+  <a class="app" href="phrases/index.html" data-part="phrases"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9v7H6l-3 3Z"/><path d="M12 9h9v7h-1v3l-3-3h-5Z"/></svg>العبارات</a>
+  <a class="app" href="sentences/index.html" data-part="sentences"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></svg>الجمل</a>
   <div class="app later" role="link" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-9-2v14c4 0 7 .5 9 2 2-1.5 5-2 9-2V4c-4 0-7 .5-9 2Zm0 0v14"/></svg>القصص<small>قريبًا</small></div>
-  <a class="app" href="approaches/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="8" height="14" rx="2"/><rect x="14" y="5" width="8" height="14" rx="2"/><path d="M11 12h2"/></svg>المناهج<small>الأزواج والدورات</small></a>
+  <a class="app" href="approaches/index.html" data-part="approaches"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="8" height="14" rx="2"/><rect x="14" y="5" width="8" height="14" rx="2"/><path d="M11 12h2"/></svg>المناهج<small>الأزواج والدورات</small></a>
  </nav>
 </main>
 <footer><p>SPEECH AND LANGUAGE PATHOLOGY</p><p><strong>Ahmad Ghanem</strong></p><p>Latakia - Syria</p><p><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></p></footer>
@@ -70,6 +99,9 @@ footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;
   <p id="account-error" class="error" role="alert" hidden></p>
   <button class="primary" type="submit">ابدأ</button>
  </form>
+</dialog>
+<dialog id="gate" class="sheet" aria-labelledby="gate-title">
+ <form id="gate-form" method="dialog"><div class="sheet-head"><h2 id="gate-title">وضع المعالج</h2></div><label for="gate-code">الرمز يفتح كل الأجزاء</label><input id="gate-code" type="password" inputmode="numeric" autocomplete="off" maxlength="6"><p id="gate-error" class="error" role="alert" hidden>الرمز غير صحيح.</p><div class="gate-row"><button type="button" id="gate-cancel">إلغاء</button><button class="primary" type="submit">فتح</button></div></form>
 </dialog>
 
 <script>
@@ -92,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   function choose(id) {
-    Children.choose(id); drawAccount(); $('accounts').close();
+    Children.choose(id); drawAccount(); drawToday(); $('accounts').close();
     const go = next; next = null; if (go) location.href = go;
   }
   async function open() {
@@ -107,7 +139,52 @@ document.addEventListener('DOMContentLoaded', () => {
     choose(Children.add(name, new FormData(event.target).get('character')).id);
   });
   /* An app opens for the active child; with none chosen yet, the accounts window comes first. */
+  /* ---------- Today's session and the locks (assets/therapy.js) ---------- */
+  const T = window.ArticulationTherapy, icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true">${T.ICONS[name]}</svg>`;
+  const digits = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+  let after = null;
+  function drawToday() {
+    const child = Children.active(), info = child && T ? T.day(child.id) : null, open = !info || T.therapistOpen(), parts = info ? T.partsOf(info.view) : null;
+    document.body.classList.toggle('has-plan', !!info); $('today').hidden = !info;
+    document.querySelectorAll('nav a.app[data-part]').forEach(link => {
+      const locked = !open && !parts.has(link.dataset.part);
+      link.classList.toggle('locked', locked);
+      if (locked && !link.querySelector('.lock-badge')) link.insertAdjacentHTML('beforeend', `<span class="lock-badge" aria-hidden="true">${icon('lock')}</span>`);
+      if (!locked) link.querySelector('.lock-badge')?.remove();
+      if (locked) link.setAttribute('aria-description', 'مقفل: خارج الخطة'); else link.removeAttribute('aria-description');
+    });
+    if (!info) return;
+    $('unlock').innerHTML = icon(open ? 'open' : 'lock'); $('unlock').setAttribute('aria-pressed', String(open));
+    const session = info.open || info.sessions.at(-1), list = session?.activities || [], next = list.find(a => !a.done);
+    $('today-time').textContent = `${digits(list.length * T.MINUTES)} د`;
+    $('today-list').style.setProperty('--n', Math.max(1, list.length));
+    $('today-list').replaceChildren(...list.map(activity => {
+      const item = document.createElement('li'), button = document.createElement('button'), l = T.label(activity);
+      button.type = 'button'; button.className = `task${activity.done ? ' done' : ''}${activity === next ? ' next' : ''}`;
+      button.innerHTML = `<svg viewBox="0 0 24 24" class="part" aria-hidden="true">${T.ICONS[activity.part]}</svg><b dir="rtl"${[...l.target].length > 2 ? ' class="long"' : ''}>${l.target}</b><small>${l.title}<br>${l.detail}</small><svg viewBox="0 0 24 24" class="star" aria-hidden="true">${T.ICONS.star}</svg>`;
+      button.setAttribute('aria-label', `${l.title}: ${l.target}، ${l.detail}${activity.done ? '، تمّ' : ''}`);
+      button.onclick = () => go(activity.key);
+      item.append(button); return item;
+    }));
+    $('today-go').hidden = !next;
+    $('today-end').hidden = !!next; $('today-end').textContent = !list.length ? 'لا أنشطة في الخطة الآن.' : info.more ? 'أحسنت! انتهى تدريب اليوم.' : 'أحسنت! انتهى تدريب اليوم. إلى الغد.';
+    $('today-more').hidden = !info.more;
+    const days = T.calendar(info.plan, 14);
+    $('today-days').replaceChildren(...days.map(d => { const i = document.createElement('i'); i.dataset.done = String(Math.min(2, d.done)); i.dataset.started = String(d.started); if (d.today) i.className = 'now'; return i; }));
+    $('today-days').setAttribute('aria-label', `أيام التدريب في أسبوعين: ${digits(days.filter(d => d.done).length)}`);
+  }
+  function go(key) { const child = Children.active(), href = child && T.begin(child.id, key); if (href) location.href = href; }
+  $('today-go').onclick = () => { const child = Children.active(), info = child && T.day(child.id), next = info?.open?.activities.find(a => !a.done); if (next) go(next.key); };
+  $('today-more').onclick = () => { const child = Children.active(); if (child && T.another(child.id)) drawToday(); };
+  function gate(then) { after = then; $('gate-code').value = ''; $('gate-error').hidden = true; $('gate').showModal(); $('gate-code').focus(); }
+  $('gate-form').addEventListener('submit', event => {
+    if ($('gate-code').value !== '013') { event.preventDefault(); $('gate-error').hidden = false; $('gate-code').select(); return; }
+    T.setTherapist(true); drawToday(); const then = after; after = null; if (then) location.href = then;
+  });
+  $('gate-cancel').onclick = () => { after = null; $('gate').close(); };
+  $('unlock').onclick = () => { if (T.therapistOpen()) { T.setTherapist(false); drawToday(); } else gate(null); };
   document.querySelectorAll('a.app').forEach(link => link.addEventListener('click', event => {
+    if (link.classList.contains('locked')) { event.preventDefault(); gate(link.href); return; }
     if (Children.active()) return;
     event.preventDefault(); next = link.href; drawList(); $('accounts').showModal();
   }));
@@ -118,8 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom) return;
     next = null; $('accounts').close();
   });
-  window.addEventListener('pageshow', () => { Children.reload(); drawAccount(); });
-  drawAccount();
+  window.addEventListener('pageshow', () => { Children.reload(); drawAccount(); drawToday(); });
+  drawAccount(); drawToday();
 });
 </script>
 </body></html>

@@ -252,6 +252,7 @@
     if (keys.length) child.progress.attempts.push({ date: new Date().toISOString(), run: session.id, sound: session.pattern.id, zone: session.activity, scores: { ...session.scores } });
     save();
     showDone(keys.length ? Plan.percent({ scores: session.scores }) : null, `${session.pattern.name} · ${positionName(session.activity)}`);
+    window.ArticulationToday?.done('approaches', session.pattern.id, [session.activity]);
   }
 
   /* ---------- Cycles (Hodson) ---------- */
@@ -363,5 +364,13 @@
 
   drawHome();
   if (!Children.list().length) { drawAccounts(); $('accounts').showModal(); }
+  /* Opened from today's session (assets/today.js): the plan's pattern and approach start with one tap. */
+  window.ArticulationToday?.offer('approaches', activity => {
+    if (!active()) return;
+    Sound.unlock();
+    const find = id => A.PATTERNS.find(p => p.id === id);
+    if (activity.zone === 'cycles') { const list = (activity.patterns || []).map(find).filter(Boolean); if (list.length) startCycles(list); }
+    else if (find(activity.pattern)) begin(activity.zone, find(activity.pattern));
+  });
   window.ApproachGame = { session: () => session, cycle: () => cycle };
 })();

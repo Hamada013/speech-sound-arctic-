@@ -4,6 +4,7 @@ This repository holds the articulation apps by Ahmad Ghanem. It must never link 
 
 - The home page `index.html` is one app; its buttons are its parts. [docs/roadmap.md](docs/roadmap.md) holds the decisions and the plan (side bar, combined reports, intervention plan, sounds from a test report, phrases, sentences, stories). Read it before working on the app as a whole and keep it up to date.
 - `assets/`: what every part shares: the one account list (`children.js`), the accounts window and kid faces (`accounts.js`), and the parent check.
+- The intervention plan: `assets/therapy.js` (plan from the test, levels, daily sessions, locks), `assets/today.js` and `today.css` (today's activity inside a part), and the plan page `plan/`. See item 5 of the roadmap. Every part loads them and calls `ArticulationToday.offer` and `.done`; a new part must too.
 - `words/` (نطقي): the word game. [docs/articulation-sounds.md](docs/articulation-sounds.md) explains what it does. Read it before changing the app, and follow it when adding a sound or scenario.
 - `test/` (اختبار النطق): the articulation screening test, moved here from the speech website with its history. See `test/README.md`; run its tests from `test/`.
 - `approaches/` (المناهج): minimal pairs, oppositions and cycles for error patterns. See `approaches/README.md`.
