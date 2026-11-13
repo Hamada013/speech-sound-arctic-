@@ -301,7 +301,7 @@
   const setTherapist = on => write(OPEN_KEY, on ? 'on' : 'off');
 
   const api = { KEY, TODAY_KEY, TARGET, STREAK, AT_ONCE, MINUTES, PARTS, LADDER, PATTERNS, FEATURES, ZONE_NAMES, WORD_IDS, SYLLABLE_IDS, PARENT_NAMES, ICONS,
-    today, url, planOf, savePlan, remove, create, status, partsOf, applyGoals, day, another, calendar, begin, current, done, label, therapistOpen, setTherapist, soundsOf, patternsOf };
+    today, url, planOf, savePlan, remove, create, status, partsOf, recordIn, zoneState, percentOf, sizeOf, applyGoals, day, another, calendar, begin, current, done, label, therapistOpen, setTherapist, soundsOf, patternsOf };
   root.ArticulationTherapy = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

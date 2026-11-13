@@ -1,4 +1,5 @@
-/* The report for one child: bars for each sound and word position, a progress graph, and a PDF download. */
+/* The report for one child, graphs first: a ring of right, partial and wrong with the overall score, a bar per word
+   position, a sounds-by-position grid, progress lines, then each sound's details, and a PDF download. */
 window.ArticulationReport = (() => {
   const Data = window.ArticulationData, Plan = window.ArticulationPlan;
   /* Colours follow the word position everywhere and never change with what is shown. */
@@ -112,13 +113,6 @@ window.ArticulationReport = (() => {
   }
 
   const blockTitle = text => el('h3', 'rp-title', text);
-  function overview(child) {
-    const block = el('section', 'rp-block');
-    block.append(blockTitle('حالة الأصوات'));
-    Data.sounds.forEach(sound => block.append(barRow({ name: `${sound.letter} ${sound.name}`, color: SOUND_COLOR, stat: soundStat(child, sound.id) })));
-    block.append(el('p', 'rp-note', `كل نسبة هي متوسط الكلمات في آخر جلسة. الخط على الشريط هو الهدف ${Plan.TARGET}%.`));
-    return block;
-  }
   function soundBlock(host, child, sound, pdf) {
     const block = el('section', 'rp-block');
     block.append(blockTitle(`${sound.name} (${sound.letter})`));
@@ -132,9 +126,85 @@ window.ArticulationReport = (() => {
     lineChart(plot, series, !pdf);
     if (!pdf) block.append(sessionTable(child, sound.id));
   }
+  /* ---------- Graphs first ---------- */
+  const OUTCOMES = [['right', 'صحيح', '#0ca30c'], ['partial', 'جزئي', '#fab219'], ['wrong', 'خطأ', '#d03b3b']];
+  const mean = list => list.reduce((a, b) => a + b, 0) / list.length;
+  /* The latest session of each sound and short goal: its grades. */
+  function latestOf(child) {
+    const latest = new Map();
+    child.progress.attempts.forEach(attempt => latest.set(`${attempt.sound}|${attempt.zone}`, Object.values(attempt.scores)));
+    return latest;
+  }
+  const hasData = child => child.progress.attempts.length > 0;
+  const seq = percent => { const a = [238, 247, 241], b = [31, 122, 74], k = percent / 100; return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',')})`; };
+
+  function summary(child, latest) {
+    const block = el('section', 'rp-block rp-summary'), all = [...latest.values()].flat();
+    const counts = { right: all.filter(v => v === 1).length, partial: all.filter(v => v > 0 && v < 1).length, wrong: all.filter(v => v === 0).length };
+    const overall = Math.round(mean([...latest.values()].map(mean)) * 100), size = 150, R = 58, W = 22, C = 2 * Math.PI * R, total = all.length;
+    const ring = svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, role: 'img', 'aria-label': `النتيجة ${overall}%. ${OUTCOMES.map(([id, name]) => `${name} ${counts[id]}`).join('، ')}` });
+    ring.append(svgEl('circle', { cx: size / 2, cy: size / 2, r: R, fill: 'none', stroke: '#eef2f5', 'stroke-width': W }));
+    let at = 0;
+    OUTCOMES.forEach(([id, name, color]) => {
+      const part = counts[id] / total * C; if (!part) return;
+      const arc = svgEl('circle', { cx: size / 2, cy: size / 2, r: R, fill: 'none', stroke: color, 'stroke-width': W, 'stroke-dasharray': `${Math.max(0, part - 2)} ${C}`, 'stroke-dashoffset': -at, transform: `rotate(-90 ${size / 2} ${size / 2})` });
+      const tip = svgEl('title'); tip.textContent = `${name}: ${counts[id]} (${Math.round(counts[id] / total * 100)}%)`; arc.append(tip);
+      ring.append(arc); at += part;
+    });
+    ring.append(label({ x: size / 2, y: size / 2 + 9, 'text-anchor': 'middle', 'font-size': 30, 'font-weight': 800, fill: INK }, `${overall}%`));
+    const left = el('div', 'rp-ring'), legend = el('div', 'rp-ring-legend');
+    OUTCOMES.forEach(([id, name, color]) => { const row = el('span'), dot = el('i'); dot.style.background = color; row.append(dot, el('span', '', name), el('b', '', String(counts[id]))); legend.append(row); });
+    left.append(ring, legend);
+    const bars = el('div', 'rp-sources');
+    const single = Data.positions.length === 1, statOf = values => values.length ? { points: values.reduce((a, b) => a + b, 0), size: values.length, percent: Math.round(mean(values) * 100) } : null;
+    if (single) Data.sounds.filter(sound => latest.has(`${sound.id}|${Data.positions[0].id}`)).forEach(sound => bars.append(barRow({ name: `${sound.letter} ${sound.name}`, color: SOUND_COLOR, stat: { ...statOf(latest.get(`${sound.id}|${Data.positions[0].id}`)), reached: Plan.reached(child, sound.id, Data.positions[0].id) } })));
+    else Data.positions.forEach(position => {
+      const values = [...latest].filter(([key]) => key.endsWith('|' + position.id)).flatMap(([, list]) => list);
+      bars.append(barRow({ name: position.name, color: COLORS[position.id], keyed: true, stat: statOf(values) }));
+    });
+    block.append(blockTitle('النتيجة'), el('div', 'rp-summary-row'));
+    block.lastChild.append(left, bars);
+    return block;
+  }
+  /* Sounds down the side, the two short goals across: each cell is that goal's latest session for that sound. */
+  function grid(child, latest) {
+    const block = el('section', 'rp-block'), table = el('table', 'rp-grid'), head = el('tr');
+    head.append(el('th', '', ''), ...Data.positions.map(position => el('th', '', position.name)));
+    table.append(head);
+    Data.sounds.filter(sound => Data.positions.some(position => latest.has(`${sound.id}|${position.id}`))).forEach(sound => {
+      const row = el('tr'); row.append(el('th', '', sound.letter));
+      Data.positions.forEach(position => {
+        const values = latest.get(`${sound.id}|${position.id}`), td = el('td');
+        if (values) {
+          const percent = Math.round(mean(values) * 100), reached = Plan.reached(child, sound.id, position.id);
+          td.style.background = seq(percent); td.style.color = percent > 55 ? '#fff' : INK; td.textContent = `${percent}%${reached ? ' ✓' : ''}`; td.dir = 'ltr';
+          td.title = `${sound.name}، ${position.name}: ${percent}%${reached ? '، تحقق الهدف' : ''}`;
+        } else { td.textContent = '—'; td.className = 'rp-grid-empty'; }
+        row.append(td);
+      });
+      table.append(row);
+    });
+    const key = el('div', 'rp-grid-key'); key.append(el('span', '', '0%'), el('i'), el('span', '', '100%'));
+    block.append(blockTitle('الأصوات والأهداف'), table, key);
+    return block;
+  }
+  /* One line per short goal: each session's score, in order. */
+  function progress(host, child, pdf) {
+    const series = Data.positions.map(position => ({ name: position.name, color: COLORS[position.id], points: child.progress.attempts.filter(attempt => attempt.zone === position.id).map(attempt => ({ value: Plan.percent(attempt) })) })).filter(entry => entry.points.length);
+    if (!series.length) return;
+    const block = el('section', 'rp-block'), plot = el('div', 'rp-plot');
+    block.append(blockTitle('التقدّم'));
+    if (series.length > 1) { const legend = el('div', 'rp-legend'); series.forEach(entry => { const item = el('span'), key = el('i', 'rp-key'); key.style.background = entry.color; item.append(key, document.createTextNode(entry.name)); legend.append(item); }); block.append(legend); }
+    block.append(plot); host.append(block);
+    lineChart(plot, series, !pdf);
+  }
+  /* Graphs first: the result ring, the sounds-by-position grid and the progress lines; then each sound's details. */
   function build(host, child, pdf) {
-    host.append(overview(child));
-    Data.sounds.filter(sound => Plan.attemptsOf(child, sound.id).length).forEach(sound => soundBlock(host, child, sound, pdf));
+    const latest = latestOf(child);
+    host.append(summary(child, latest), grid(child, latest));
+    progress(host, child, pdf);
+    const played = Data.sounds.filter(sound => Plan.attemptsOf(child, sound.id).length);
+    if (played.length) { host.append(el('h3', 'rp-part', 'التفاصيل')); played.forEach(sound => soundBlock(host, child, sound, pdf)); }
   }
 
   function draw(host, child) {

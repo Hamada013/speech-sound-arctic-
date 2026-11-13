@@ -1,0 +1,39 @@
+/* The reports page, on top of ../plan/plan.css (bar, cards, legends). Part colours are fixed everywhere:
+   test teal, syllables purple, words blue, phrases orange, sentences green, approaches magenta. */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:4px 14px 4px 12px;border:1px solid var(--line);border-radius:22px;background:#fff;font-weight:700;font-size:15px}
+.chip i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.chip[aria-pressed=true]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);background:color-mix(in srgb,var(--c) 9%,#fff)}
+.chip[aria-pressed=false]{color:var(--muted)}.chip[aria-pressed=false] i{background:#cfdbe3}
+.chip:disabled{opacity:.45;cursor:default}
+
+/* Rings: one per part, its average latest score. */
+.rings{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+.ring{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0;text-align:center}
+.ring svg{width:96px;height:96px}.ring b{font-size:15px}.ring span{font-size:12px;color:var(--muted)}
+
+/* Sounds: one row per letter; with one part a column per level, with several a column per part holding a block per level. */
+.combo{display:grid;gap:4px;align-items:center;overflow-x:auto}
+.combo .h{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--muted);text-align:center}
+.combo .h i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.combo .l{font-size:24px;font-weight:700;text-align:center}
+.combo .c{display:flex;gap:3px;min-height:38px}
+.combo .b{flex:1;display:grid;place-items:center;min-width:0;border-radius:8px;font-size:12px;font-weight:700}
+.combo .b.none{background:#f2f5f8;color:#a7b6c1;font-weight:400}
+.scale{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;font-size:12px;color:var(--muted)}
+.scale>i{flex:0 1 140px;height:8px;border-radius:4px;background:linear-gradient(to left,rgb(238,247,241),rgb(31,122,74))}
+.scale .none-key{display:inline-flex;align-items:center;gap:5px}.scale .none-key i{width:12px;height:12px;border-radius:3px;background:#f2f5f8;box-shadow:inset 0 0 0 1px #dde5eb}
+
+/* Approaches: a bar per pattern and approach. */
+.pbars{display:flex;flex-direction:column;gap:8px}
+.pbar{display:grid;grid-template-columns:minmax(120px,32%) 1fr 48px;align-items:center;gap:10px;font-size:14px}
+.pbar .t{position:relative;height:18px;border-radius:9px;background:var(--pale);overflow:hidden}.pbar .t i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:9px}
+.pbar .t::after{content:'';position:absolute;inset-block:0;inset-inline-start:80%;width:2px;background:#7c8e9c}
+.pbar b{direction:ltr;text-align:start}.pbar small{display:block;color:var(--muted)}
+
+/* Progress lines. */
+.legend-row{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:8px;font-size:13px;color:var(--muted)}.legend-row span{display:inline-flex;align-items:center;gap:6px}.legend-row i{width:14px;height:4px;border-radius:2px;background:var(--c)}
+.chart svg{display:block;width:100%;height:auto;direction:ltr}
+
+@media (max-width:520px){.combo .l{font-size:20px}.combo .b{font-size:10px}.combo .c{min-height:34px}.pbar{grid-template-columns:1fr 44px}.pbar .t{grid-column:1 / -1;grid-row:2}}
+@media print{.chips{display:none}}
