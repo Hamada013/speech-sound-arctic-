@@ -1,27 +1,123 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff"><meta name="description" content="تطبيقات النطق للأطفال: الكلمات والمقاطع.">
+<meta name="theme-color" content="#ffffff"><meta name="description" content="تطبيقات النطق بالعربية للأطفال: المقاطع والكلمات، ثم العبارات والجمل والقصص.">
 <title>تدريب النطق</title>
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css">
+<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script>
 <style>
 :root{--ink:#22445a;--muted:#5c7285;--line:#dceaf4;--green:#3f9a6c}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}[hidden]{display:none!important}
 body{display:flex;flex-direction:column;min-height:100dvh;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 10% 25%,#e9f8ed 0,transparent 42%),radial-gradient(ellipse at 90% 50%,#edf7ff 0,transparent 45%),#f8fafc}
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px 16px}
+button{font:inherit;color:inherit;cursor:pointer}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0284c7;outline-offset:2px}
+header{display:flex;justify-content:flex-end;padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+.account{display:flex;align-items:center;gap:8px;min-height:44px;max-width:60vw;padding:3px 14px 3px 4px;border:1px solid var(--line);border-radius:22px;background:#fff;font-weight:700}
+.account>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}#account-face{display:flex;flex:none}
+.account .no-face{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#edf6f0;color:var(--green)}.account .no-face svg{width:22px;height:22px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:16px}
 .hero{text-align:center}.hero img{width:clamp(84px,17vh,130px);height:auto}.hero h1{margin:6px 0 0;font-size:clamp(28px,5vh,38px)}.hero p{margin:2px 0 0;color:var(--muted)}
-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;width:min(100%,520px)}
-a.app{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 14px;border:1px solid var(--line);border-radius:28px;background:#fff;box-shadow:0 8px 22px #2a547012;color:inherit;text-decoration:none;font-size:20px;font-weight:700}
-a.app:active{transform:scale(.97)}a.app svg{width:44px;height:44px;fill:none;stroke:var(--green);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}a.app small{font-weight:400;font-size:14px;color:var(--muted)}
-a:focus-visible{outline:3px solid #0284c7;outline-offset:2px}
+/* The ready parts two by two, then the one still to come, smaller and centred under them. */
+nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;width:min(100%,560px)}
+nav .app{grid-column:span 3}nav .app.later{grid-column:2 / span 4;min-height:108px;padding:12px 6px;font-size:17px;gap:6px}nav .app.later svg{width:34px;height:34px}
+.app{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:132px;padding:18px 12px;border:1px solid var(--line);border-radius:28px;background:#fff;box-shadow:0 8px 22px #2a547012;color:inherit;text-decoration:none;font-size:20px;font-weight:700}
+a.app:active{transform:scale(.97)}.app svg{width:44px;height:44px;color:var(--green)}
+.app.later{box-shadow:none;background:#fbfdfe;color:var(--muted)}.app.later svg{color:#9fb3c2}
+.app small{font-weight:400;font-size:13px;color:var(--muted)}.app.later small{padding:1px 10px;border-radius:10px;background:#eef4f8}
 footer{padding:8px 16px max(12px,env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--muted);direction:ltr}footer p{margin:1px 0}footer a{color:inherit}
+/* The accounts window, as in the apps. */
+.sheet{width:min(calc(100vw - 24px),520px);max-height:calc(100dvh - 24px);padding:12px 18px 20px;border:1px solid var(--line);border-radius:24px;color:var(--ink);background:#fff;overflow-y:auto}.sheet::backdrop{background:#22445a66}
+.sheet-head{display:flex;align-items:center;justify-content:space-between}.sheet-head h2{margin:0;font-size:21px;outline:0}
+.icon{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:14px;background:transparent}.icon svg{width:25px;height:25px}
+#account-form{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}#account-form>label{font-weight:700}
+#child-name{min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:14px;font:inherit;color:inherit}
+.heroes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hero-pick{display:flex;flex-direction:column;align-items:center;padding:8px;border:2px solid var(--line);border-radius:18px;cursor:pointer}.hero-pick input{position:absolute;opacity:0}.hero-pick:has(input:checked){border-color:#62aa8c;background:#edf6f0}.hero-pick:has(input:focus-visible){outline:3px solid #0284c7}
+.error{margin:8px 0;color:#a43c38;font-size:15px;min-height:1.4em}
+.primary{min-height:52px;padding:10px 26px;border:0;border-radius:18px;background:var(--green);color:#fff;font-weight:700;font-size:18px}
+@media (max-height:620px){footer{display:none}}
+/* Phones held sideways: a smaller title and all five parts in one row. */
+@media (orientation:landscape) and (max-height:520px){main{gap:12px;padding-block:8px}.hero img{width:60px}.hero h1{font-size:26px;margin:0}.hero p{display:none}nav{grid-template-columns:repeat(5,minmax(0,1fr));width:min(100%,820px)}nav .app,nav .app.later{grid-column:auto;min-height:96px;font-size:17px;padding:10px 6px}nav .app svg{width:34px;height:34px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
+<header>
+ <button id="account" class="account" type="button" aria-haspopup="dialog"><span id="account-none" class="no-face" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span id="account-face" hidden></span><span id="account-name">الحسابات</span></button>
+</header>
 <main>
  <section class="hero"><img src="assets/logo.webp" alt=""><h1>تدريب النطق</h1><p>مع حمادة</p></section>
  <nav aria-label="التطبيقات">
-  <a class="app" href="words/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>نطقي<small>الكلمات</small></a>
-  <a class="app" href="syllable/syllable.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg>المقاطع<small>قطار المقاطع</small></a>
+  <a class="app" href="syllable/syllable.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg>المقاطع</a>
+  <a class="app" href="words/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>الكلمات</a>
+  <a class="app" href="phrases/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9v7H6l-3 3Z"/><path d="M12 9h9v7h-1v3l-3-3h-5Z"/></svg>العبارات</a>
+  <a class="app" href="sentences/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h9"/></svg>الجمل</a>
+  <div class="app later" role="link" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-9-2v14c4 0 7 .5 9 2 2-1.5 5-2 9-2V4c-4 0-7 .5-9 2Zm0 0v14"/></svg>القصص<small>قريبًا</small></div>
  </nav>
 </main>
 <footer><p>SPEECH AND LANGUAGE PATHOLOGY</p><p><strong>Ahmad Ghanem</strong></p><p>Latakia - Syria</p><p><a href="mailto:slp.ahmadghanem@gmail.com">slp.ahmadghanem@gmail.com</a></p></footer>
+
+<dialog id="accounts" class="sheet" aria-labelledby="accounts-title">
+ <div class="sheet-head"><h2 id="accounts-title" tabindex="-1" autofocus>الحسابات</h2><button class="icon" data-close type="button" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+ <div id="account-list"></div>
+ <form id="account-form" novalidate>
+  <label for="child-name">طفل جديد</label><input id="child-name" autocomplete="off" maxlength="40" placeholder="الاسم">
+  <div class="heroes" role="radiogroup" aria-label="الشخصية">
+   <label class="hero-pick"><input type="radio" name="character" value="boy" checked><span data-kid="boy"></span><span>ولد</span></label>
+   <label class="hero-pick"><input type="radio" name="character" value="girl"><span data-kid="girl"></span><span>بنت</span></label>
+  </div>
+  <p id="account-error" class="error" role="alert" hidden></p>
+  <button class="primary" type="submit">ابدأ</button>
+ </form>
+</dialog>
+
+<script>
+/* The one account for every app: chosen here, and the same child is active inside each app. */
+document.addEventListener('DOMContentLoaded', () => {
+  const Children = window.ArticulationChildren, $ = id => document.getElementById(id);
+  let next = null;
+  function drawAccount() {
+    const child = Children.active();
+    $('account-name').textContent = child ? child.name : 'الحسابات';
+    $('account').setAttribute('aria-label', child ? `الحساب: ${child.name}` : 'الحسابات');
+    $('account-face').hidden = !child; $('account-none').hidden = !!child;
+    if (child) $('account-face').replaceChildren(window.SuiteAccounts.avatar(child, 'small'));
+  }
+  function drawList() {
+    $('child-name').value = ''; $('account-error').hidden = true;
+    window.SuiteAccounts.render($('account-list'), Children.list(), child => {
+      const select = document.createElement('button'); select.type = 'button'; select.onclick = () => choose(child.id);
+      return window.SuiteAccounts.row(child, select);
+    });
+  }
+  function choose(id) {
+    Children.choose(id); drawAccount(); $('accounts').close();
+    const go = next; next = null; if (go) location.href = go;
+  }
+  async function open() {
+    if (Children.active() && !await window.ChildAccountGate.request()) return;
+    drawList(); $('accounts').showModal();
+  }
+  $('account').onclick = () => { next = null; void open(); };
+  $('account-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const name = $('child-name').value.trim();
+    if (!name) { $('account-error').textContent = 'اكتب اسم الطفل أولًا.'; $('account-error').hidden = false; $('child-name').focus(); return; }
+    choose(Children.add(name, new FormData(event.target).get('character')).id);
+  });
+  /* An app opens for the active child; with none chosen yet, the accounts window comes first. */
+  document.querySelectorAll('a.app').forEach(link => link.addEventListener('click', event => {
+    if (Children.active()) return;
+    event.preventDefault(); next = link.href; drawList(); $('accounts').showModal();
+  }));
+  document.querySelector('#accounts [data-close]').onclick = () => { next = null; $('accounts').close(); };
+  $('accounts').addEventListener('click', event => {
+    if (event.target !== $('accounts')) return;
+    const box = $('accounts').getBoundingClientRect();
+    if (event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom) return;
+    next = null; $('accounts').close();
+  });
+  window.addEventListener('pageshow', () => { Children.reload(); drawAccount(); });
+  drawAccount();
+});
+</script>
 </body></html>

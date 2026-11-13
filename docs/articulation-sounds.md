@@ -18,7 +18,7 @@ Each sound has 30 words, ten per position. All 28 sounds are finished, from أ t
 - **Parent:** the goals icon is always on the home screen, so they can choose sounds and positions before Play.
 - **Therapist:** the switch on the home screen (password 013) turns on grading and shows the report icon. Grades are only recorded while it is on.
 
-**Accounts and data.** Each child has a local account with a boy or girl character. Everything stays on that device, with no server. The therapist's report leaves the device only when someone downloads its PDF.
+**Accounts and data.** Each child has one local account for the whole app, chosen on the home page or from the account button here (see `../assets/children.js` and [roadmap.md](roadmap.md)), with a boy or girl character. This game keeps the child's progress in its own store under the same id. Everything stays on that device, with no server. The therapist's report leaves the device only when someone downloads its PDF.
 
 **Recordings.** The therapist records every word. `sounds/README.txt` is the numbered list. Words with no recording stay silent.
 

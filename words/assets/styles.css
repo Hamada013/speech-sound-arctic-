@@ -171,3 +171,23 @@ body{background:#f8fafc}
 @keyframes turn-phone{0%{transform:rotate(0);opacity:0}6%,22%{transform:rotate(0);opacity:1}58%,94%{transform:rotate(90deg);opacity:1}100%{transform:rotate(90deg);opacity:0}}
 @media (orientation:portrait) and (max-width:600px){.turn{display:grid}}
 @media (prefers-reduced-motion:reduce){.turn-phone{transform:rotate(90deg)}}
+
+/* The way back to the app's home page, in every part. */
+a.icon{color:inherit;text-decoration:none}
+
+/* Small phones: every top-bar button stays a full 44px; the part's name hides (its logo stays) and the account name is shorter. */
+@media (max-width:430px){.topbar{gap:6px;padding-inline:max(10px,env(safe-area-inset-left))}.brand strong{display:none}.tools{gap:2px}.tools>.icon{flex:none;width:44px;min-width:44px}.account{flex:0 1 auto;max-width:150px;padding-inline-end:8px}}
+/* Phones held sideways: the logo and title on one side, Play and the therapist switch beside them, all on one screen. */
+@media (orientation:landscape) and (max-height:520px){
+ .home-main{display:grid;grid-template-columns:auto auto;align-content:center;justify-content:center;column-gap:clamp(24px,6vw,72px);row-gap:12px;padding-block:8px}
+ .home-main .hero{grid-row:1 / span 2}.home-main .hero img{width:72px;height:72px}.home-main .hero h1{font-size:28px}
+ .home-main .actions{width:260px}.home-main .action{min-height:96px}.home-main .switch{width:260px}
+ .home-main .therapist-tools{grid-column:1 / -1}
+}
+/* Phones held sideways: letter and picture side by side in short tiles, so the whole letter board shows without scrolling. */
+@media (orientation:landscape) and (max-height:520px){
+ .letters{padding:max(10px,env(safe-area-inset-top)) max(72px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left))}
+ .letter-tiles{gap:6px;padding:8px}
+ .letter-tile{flex-direction:row;justify-content:center;gap:2px;width:clamp(84px,11.5vw,124px);padding:3px 6px;border-width:3px;border-radius:16px;box-shadow:0 3px 0 #c9dbe7}
+ .letter-tile b{font-size:28px;line-height:1.2}.letter-tile img{width:50%}
+}

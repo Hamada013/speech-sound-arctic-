@@ -34,3 +34,9 @@ dialog{width:min(600px,calc(100% - 24px));max-height:calc(100svh - 32px);max-hei
 .matching-target.drop-target.matched{border:1px solid #91c2ae;background:#edf8f1}
 .matching-target.drop-target:hover{border-color:#6caa90}.matching-target.drop-target.is-playing{opacity:1}
 @media(max-height:560px) and (min-aspect-ratio:1/1){.listening-cue{min-height:44px;height:44px;padding:4px 12px}.listening-cue svg{width:24px;height:24px}}
+
+/* Five activities: three across on wider screens, so the whole home fits the screen without scrolling. */
+@media(min-width:700px){.activity-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:760px;margin:auto}}
+@media(min-width:700px) and (max-height:900px){.home-view{padding-top:12px}.home-intro{margin-bottom:14px}.activity-card{padding:16px 10px;gap:10px}.activity-card svg{width:40px;height:40px}}
+/* Phones held sideways: the five activities in one row under a small title. */
+@media(orientation:landscape) and (max-height:520px) and (min-width:700px){.activity-grid{grid-template-columns:repeat(5,minmax(0,1fr));max-width:none}.activity-card{padding:12px 6px;gap:6px}.activity-card svg{width:32px;height:32px}.home-intro>img{display:none}.home-intro{margin-bottom:8px}}

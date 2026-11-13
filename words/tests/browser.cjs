@@ -4,9 +4,11 @@ const pw = require(process.env.SOUNDS_PLAYWRIGHT || 'playwright');
 const root = path.resolve(__dirname, '..'), shots = process.env.SHOTS, engine = process.env.APP_ENGINE || 'chromium';
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.m4a': 'audio/mp4' };
 
+/* Serves the whole repository: the page is /words/index.html and the shared account files are in /assets/. */
+const site = path.resolve(root, '..');
 const server = http.createServer((request, response) => {
-  const name = decodeURIComponent(new URL(request.url, 'http://x').pathname).replace(/^\/words\//, '') || 'index.html', file = path.join(root, name === '' ? 'index.html' : name);
-  if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { response.writeHead(404); response.end(); return; }
+  const name = decodeURIComponent(new URL(request.url, 'http://x').pathname), file = path.join(site, name === '/' ? 'index.html' : name);
+  if (!file.startsWith(site) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { response.writeHead(404); response.end(); return; }
   response.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' }); response.end(fs.readFileSync(file));
 });
 const shot = async (page, name) => { if (shots) { fs.mkdirSync(shots, { recursive: true }); await page.screenshot({ path: path.join(shots, `${engine}-${name}.png`) }); } };
@@ -53,7 +55,7 @@ async function travel(page, index, id, mid = true) {
   assert.ok(before < after && middle >= before, `the ${id} crossing travels left to right`);
 }
 async function pin(page, code) { for (const digit of code) await page.click(`#pin-pad button:text-is("${digit}")`); }
-const started = async page => { await page.waitForSelector('#loading', { state: 'hidden', timeout: 25000 }); await page.waitForFunction(() => ArticulationGame.scene()?.hero && ArticulationGame.scene().scene.isActive()); await page.waitForTimeout(600); };
+const started = async page => { await page.waitForSelector('#loading', { state: 'hidden', timeout: 25000 }); await page.waitForFunction(() => ArticulationGame.scene()?.hero && ArticulationGame.scene().scene.isActive()); await page.waitForTimeout(600);  /* On a phone held upright the turn-it-sideways picture covers the game until it is tapped once. */ if (await page.isVisible('#turn')) await page.click('#turn', { force: true }); };
 const run = page => page.evaluate(() => { const r = ArticulationActive().progress.run; return { sound: r.sound, scenario: r.scenario, positions: r.positions }; });
 
 (async () => {
@@ -128,7 +130,9 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
   await reachItem(page);
   await page.waitForSelector('#enc-collect:not([hidden])', { timeout: 8000 });
   assert.equal(await page.locator('#enc-say').count(), 0, 'no recording button');
-  assert.equal(await page.isVisible('#enc-replay'), false, 'no speaker until a recording exists');
+  /* All 840 recordings are in sounds/ now: the speaker shows exactly when the word has one. */
+  const hasRecording = await page.evaluate(() => { const text = document.getElementById('enc-word').textContent, word = ArticulationData.sounds.flatMap(s => Object.values(s.words).flat()).find(w => w.word === text); return ArticulationAudio.has(word.n); });
+  assert.equal(await page.isVisible('#enc-replay'), hasRecording, 'the speaker shows exactly when the word has a recording');
   await page.click('#enc-collect', { force: true }); await closed(page); await ready(page);
   assert.equal(await page.textContent('#bag-count'), '1');
   for (let i = 0; i < 8; i++) { await bagIt(page); await ready(page); }
@@ -189,7 +193,8 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
   await page.waitForSelector('.rp-plot svg');
   assert.ok((await page.textContent('.rp-doc')).includes('95%'));
   assert.equal(await page.locator('.score-tile').count(), 0, 'no word picture cards in the report');
-  const box = await page.locator('.rp-plot svg').boundingBox();
+  await page.locator('.rp-plot svg').first().scrollIntoViewIfNeeded(); /* the chart sits below the 28 sound bars */
+  const box = await page.locator('.rp-plot svg').first().boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + 60);
   await page.waitForSelector('.rp-tip:not([hidden])');
   await page.waitForTimeout(150);
@@ -263,7 +268,7 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
     await page.click('#leave'); await page.waitForSelector('#home:not([hidden])');
   }
 
-  assert.deepEqual(requested, [], 'no recording is requested until one exists');
+  assert.ok(requested.every(url => /\/sounds\/\d+\.m4a/.test(url)), 'only listed recordings are requested');
   assert.deepEqual(errors, []);
   await browser.close(); server.close();
   console.log(`PASS (${engine}): plan rules, six sounds, letter board, islands, house, street, goals, PDF report, therapist grades, item board, rides left to right.`);

@@ -21,17 +21,17 @@
  </header>
  <main id="main" tabindex="-1" class="library">
   <h1 class="library-title">مكتبة الرسوم المتحركة</h1>
+  <div id="library-letters" class="library-letters" role="group" aria-label="الحروف"></div>
   <div id="library-list" class="library-list"></div>
  </main>
  <dialog id="player" class="player" aria-labelledby="player-title">
   <div class="player-head"><h2 id="player-title"></h2><button type="button" class="icon" id="player-close" aria-label="إغلاق" title="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-  <video id="player-video" playsinline preload="auto"></video>
+  <video id="player-video" playsinline preload="auto" loop></video>
   <div class="player-controls">
    <div class="segments" role="group" aria-label="زاوية العرض">
     <button type="button" data-view="front" aria-pressed="true" aria-label="من الأمام" title="من الأمام"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/></svg></button>
     <button type="button" data-view="side" aria-pressed="false" aria-label="من الجانب" title="من الجانب"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3a8 8 0 0 0-8 8l-3 3 2 1v3a2 2 0 0 0 2 2h3v2"/><path d="M15 3a7 7 0 0 1 4 12v6"/><path d="M11 10h.01"/></svg></button>
    </div>
-   <button type="button" class="icon" id="player-replay" aria-label="أعد التشغيل" title="أعد التشغيل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg></button>
   </div>
   <p id="player-status" class="status" role="status" aria-live="polite"></p>
  </dialog>

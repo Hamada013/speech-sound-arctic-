@@ -1,4 +1,6 @@
-/* The report for one child: bars for each sound and word position, a progress graph, and a PDF download. */
+/* The report for one child: one picture of everything the child did with syllables (the train game and the listening and
+   production tests together) as a ring, bars, a sounds-by-type grid and progress lines, then the game's details, and a PDF download.
+   Graphs first, few words. */
 window.ArticulationReport = (() => {
   const Data = window.ArticulationData, Plan = window.ArticulationPlan;
   /* Colours follow the word position everywhere and never change with what is shown. */
@@ -132,16 +134,115 @@ window.ArticulationReport = (() => {
     lineChart(plot, series, !pdf);
     if (!pdf) block.append(sessionTable(child, sound.id));
   }
+  /* ---------- Everything together: the game and both tests ---------- */
+  const RESULTS_KEY = 'articulation-syllable-results-v1';
+  /* Colours follow the source everywhere (checked for colour-blind separation); outcomes use the status colours. */
+  const SOURCES = { game: ['اللعب', '#6250d6'], production: ['اختبار الإنتاج', '#d9762b'], listening: ['اختبار الاستماع', '#0f9fb5'] };
+  const OUTCOMES = [['right', 'صحيح', '#0ca30c'], ['partial', 'جزئي', '#fab219'], ['wrong', 'خطأ', '#d03b3b']];
+  const TYPES = Data.positions.map(position => position.id);
+  const mean = list => list.reduce((a, b) => a + b, 0) / list.length;
+  function testSessions(child) {
+    let sessions = []; try { sessions = JSON.parse(localStorage.getItem(RESULTS_KEY))?.sessions || []; } catch {}
+    return sessions.filter(session => session.child === child.id && Array.isArray(session.records));
+  }
+  /* Every graded syllable as sessions of { date, source, items: [{ sound, type, value from 0 to 1 }] }, oldest first.
+     Game grades are 1, 0.5 and 0; production keeps its percentage; listening is right or wrong; skipped items are left out. */
+  function sessionsOf(child) {
+    const game = child.progress.attempts.map(attempt => ({ date: attempt.date, source: 'game', items: Object.values(attempt.scores).map(value => ({ sound: attempt.sound, type: attempt.zone, value })) }));
+    const tests = testSessions(child).map(session => ({ date: session.finishedAt || session.updatedAt || session.startedAt, source: session.kind,
+      items: session.records.filter(record => record.outcome !== 'skip').map(record => ({ sound: record.id.split('-')[0], type: session.mode,
+        value: session.kind === 'production' ? (record.score ?? (record.outcome === 'correct' ? 100 : record.outcome === 'emerging' ? 50 : 0)) / 100 : record.outcome === 'correct' ? 1 : 0 })) }));
+    return [...game, ...tests].filter(session => session.items.length).sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  }
+  /* The latest result of each source for each sound and type: the newest session wins. */
+  function latestOf(sessions) {
+    const latest = new Map();
+    for (const session of sessions) {
+      const groups = new Map();
+      session.items.forEach(item => { const key = `${session.source}|${item.sound}|${item.type}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(item.value); });
+      groups.forEach((values, key) => latest.set(key, values));
+    }
+    return latest;
+  }
+  const hasData = child => sessionsOf(child).length > 0;
+  const seq = percent => { const a = [238, 247, 241], b = [31, 122, 74], k = percent / 100; return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',')})`; };
+
+  /* A ring of right, partial and wrong with the overall score in its middle, and one bar per source. */
+  function summary(sessions, latest) {
+    const block = el('section', 'rp-block rp-summary'), all = [...latest.values()].flat();
+    const counts = { right: all.filter(v => v === 1).length, partial: all.filter(v => v > 0 && v < 1).length, wrong: all.filter(v => v === 0).length };
+    const cells = new Map(); latest.forEach((values, key) => { const [, sound, type] = key.split('|'), cell = `${sound}|${type}`; if (!cells.has(cell)) cells.set(cell, []); cells.get(cell).push(mean(values)); });
+    const overall = Math.round(mean([...cells.values()].map(mean)) * 100), size = 150, R = 58, W = 22, C = 2 * Math.PI * R, total = all.length;
+    const ring = svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, role: 'img', 'aria-label': `النتيجة ${overall}%. ${OUTCOMES.map(([id, name]) => `${name} ${counts[id]}`).join('، ')}` });
+    ring.append(svgEl('circle', { cx: size / 2, cy: size / 2, r: R, fill: 'none', stroke: '#eef2f5', 'stroke-width': W }));
+    let at = 0;
+    OUTCOMES.forEach(([id, name, color]) => {
+      const part = counts[id] / total * C; if (!part) return;
+      const arc = svgEl('circle', { cx: size / 2, cy: size / 2, r: R, fill: 'none', stroke: color, 'stroke-width': W, 'stroke-dasharray': `${Math.max(0, part - 2)} ${C}`, 'stroke-dashoffset': -at, transform: `rotate(-90 ${size / 2} ${size / 2})` });
+      const tip = svgEl('title'); tip.textContent = `${name}: ${counts[id]} (${Math.round(counts[id] / total * 100)}%)`; arc.append(tip);
+      ring.append(arc); at += part;
+    });
+    ring.append(label({ x: size / 2, y: size / 2 + 9, 'text-anchor': 'middle', 'font-size': 30, 'font-weight': 800, fill: INK }, `${overall}%`));
+    const left = el('div', 'rp-ring'), legend = el('div', 'rp-ring-legend');
+    OUTCOMES.forEach(([id, name, color]) => { const row = el('span'), dot = el('i'); dot.style.background = color; row.append(dot, el('span', '', name), el('b', '', String(counts[id]))); legend.append(row); });
+    left.append(ring, legend);
+    const bars = el('div', 'rp-sources');
+    Object.entries(SOURCES).forEach(([id, [name, color]]) => {
+      const values = [...latest].filter(([key]) => key.startsWith(id + '|')).flatMap(([, list]) => list);
+      bars.append(barRow({ name, color, keyed: true, stat: values.length ? { points: values.reduce((a, b) => a + b, 0), size: values.length, percent: Math.round(mean(values) * 100) } : null }));
+    });
+    block.append(blockTitle('النتيجة'), el('div', 'rp-summary-row'));
+    block.lastChild.append(left, bars);
+    return block;
+  }
+  /* Sounds down the side, syllable types across: each cell is the latest results of every source together. */
+  function grid(latest) {
+    const block = el('section', 'rp-block'), table = el('table', 'rp-grid'), head = el('tr');
+    head.append(el('th', '', ''), ...Data.positions.map(position => { const cell = el('th', '', position.example); cell.title = position.name; return cell; }));
+    table.append(head);
+    const sounds = Data.sounds.filter(sound => TYPES.some(type => Object.keys(SOURCES).some(source => latest.has(`${source}|${sound.id}|${type}`))));
+    sounds.forEach(sound => {
+      const row = el('tr'); row.append(el('th', '', sound.letter));
+      TYPES.forEach(type => {
+        const parts = Object.entries(SOURCES).map(([id, [name]]) => [name, latest.get(`${id}|${sound.id}|${type}`)]).filter(([, values]) => values);
+        const td = el('td');
+        if (parts.length) {
+          const percent = Math.round(mean(parts.map(([, values]) => mean(values))) * 100);
+          td.style.background = seq(percent); td.style.color = percent > 55 ? '#fff' : INK; td.textContent = `${percent}%`; td.dir = 'ltr';
+          td.title = parts.map(([name, values]) => `${name}: ${Math.round(mean(values) * 100)}%`).join('\n');
+        } else { td.textContent = '—'; td.className = 'rp-grid-empty'; }
+        row.append(td);
+      });
+      table.append(row);
+    });
+    const key = el('div', 'rp-grid-key'); key.append(el('span', '', '0%'), el('i'), el('span', '', '100%'));
+    block.append(blockTitle('الأصوات والمقاطع'), table, key);
+    return block;
+  }
+  /* One line per source: each session's score, in order. */
+  function progress(host, sessions, pdf) {
+    const series = Object.entries(SOURCES).map(([id, [name, color]]) => ({ name, color, points: sessions.filter(session => session.source === id).map(session => ({ value: Math.round(mean(session.items.map(item => item.value)) * 100) })) })).filter(entry => entry.points.length);
+    if (!series.length) return;
+    const block = el('section', 'rp-block'), plot = el('div', 'rp-plot');
+    block.append(blockTitle('التقدّم'));
+    if (series.length > 1) { const legend = el('div', 'rp-legend'); series.forEach(entry => { const item = el('span'), key = el('i', 'rp-key'); key.style.background = entry.color; item.append(key, document.createTextNode(entry.name)); legend.append(item); }); block.append(legend); }
+    block.append(plot); host.append(block);
+    lineChart(plot, series, !pdf);
+  }
+
   function build(host, child, pdf) {
-    host.append(overview(child));
-    Data.sounds.filter(sound => Plan.attemptsOf(child, sound.id).length).forEach(sound => soundBlock(host, child, sound, pdf));
+    const sessions = sessionsOf(child), latest = latestOf(sessions);
+    host.append(summary(sessions, latest), grid(latest));
+    progress(host, sessions, pdf);
+    const played = Data.sounds.filter(sound => Plan.attemptsOf(child, sound.id).length);
+    if (played.length) { host.append(el('h3', 'rp-part', 'تفاصيل اللعب')); played.forEach(sound => soundBlock(host, child, sound, pdf)); }
   }
 
   function draw(host, child) {
     host.replaceChildren();
     const doc = el('div', 'rp-doc'); host.append(doc);
     doc.append(el('p', 'center muted', child.name));
-    if (!child.progress.attempts.length) { doc.append(el('p', 'center muted rp-empty', 'لا توجد جلسات مسجلة بعد. شغّل وضع المعالج أثناء اللعب لتسجيل التقييم.')); return; }
+    if (!hasData(child)) { doc.append(el('p', 'center muted rp-empty', 'لا توجد نتائج بعد: قيّم أثناء اللعب في وضع المعالج، أو أجرِ اختبار استماع أو إنتاج.')); return; }
     build(doc, child, false);
   }
 
@@ -185,5 +286,5 @@ window.ArticulationReport = (() => {
       doc.save(`تقرير-المقاطع-${child.name.replace(/[\\/:*?"<>|]/g, '')}-${today.toISOString().slice(0, 10)}.pdf`);
     } finally { stage.remove(); }
   }
-  return { draw, download };
+  return { draw, download, hasData };
 })();

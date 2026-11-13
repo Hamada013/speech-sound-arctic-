@@ -4,8 +4,8 @@
 <meta name="theme-color" content="#22445a">
 <meta name="description" content="قطار المقاطع: يتدرّب فيه الطفل على نطق المقاطع العربية مع حمادة."><title>المقاطع — مع حمادة</title>
 <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16.png"><link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/styles.css"><link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css"><link rel="stylesheet" href="assets/train.css">
-<script src="assets/data.js" defer></script><script src="assets/plan.js" defer></script><script src="assets/report.js" defer></script><script src="assets/audio.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" data-app="articulation-syllables" defer></script>
+<link rel="stylesheet" href="assets/styles.css"><link rel="stylesheet" href="../assets/accounts.css"><link rel="stylesheet" href="../assets/parent-gate.css"><link rel="stylesheet" href="assets/train.css">
+<script src="assets/data.js" defer></script><script src="assets/plan.js" defer></script><script src="assets/report.js" defer></script><script src="assets/audio.js" defer></script><script src="../assets/children.js" defer></script><script src="../assets/parent-gate.js" defer></script><script src="../assets/accounts.js" defer></script>
 <script type="module" src="assets/app.js"></script>
 </head><body>
 <div id="home" class="home">
@@ -14,7 +14,8 @@
   <div class="tools">
    <button id="report-open" class="icon" type="button" aria-label="تقرير الطفل" title="تقرير الطفل" aria-haspopup="dialog" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16v-5m5 5V6m5 10v-8"/></svg></button>
    <button id="goals-open" class="icon" type="button" aria-label="الأهداف البعيدة والقريبة" title="الأهداف البعيدة والقريبة" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></button>
-   <button id="account" class="account" type="button" aria-haspopup="dialog"><span id="account-name">الحسابات</span></button>
+   <button id="account" class="account" type="button" aria-haspopup="dialog"><span id="account-face" hidden></span><span id="account-name">الحسابات</span></button>
+   <a class="icon home-link" href="../index.html" aria-label="الصفحة الرئيسية للتطبيق" title="الصفحة الرئيسية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/></svg></a>
   </div>
  </header>
  <main class="home-main">
@@ -54,17 +55,18 @@
   <div class="grading-card"><div class="grading-head"><h2 id="grading-title">تقييم النطق</h2><button id="grading-close" class="round pack-x" type="button" aria-label="إغلاق" title="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="grading-rows" class="grading-rows"></div></div>
  </div>
 
- <div id="viewer" class="viewer" role="dialog" aria-modal="true" aria-label="كيف أنطق المقطع" hidden>
+ <div id="viewer" class="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title" hidden>
+  <div class="viewer-card">
+  <div class="viewer-head"><h2 id="viewer-title" class="viewer-title"></h2><button id="viewer-close" class="round pack-x" type="button" aria-label="رجوع إلى القطار" title="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
   <div id="viewer-panes" class="viewer-panes"></div>
-  <button id="viewer-close" class="hud-button viewer-close" type="button" aria-label="رجوع إلى القطار" title="رجوع"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
   <div class="viewer-modes" role="group" aria-label="طريقة العرض">
    <button type="button" data-view="front" aria-label="من الأمام" title="من الأمام"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/></svg></button>
    <button type="button" data-view="side" aria-label="من الجانب" title="من الجانب"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3a8 8 0 0 0-8 8l-3 3 2 1v3a2 2 0 0 0 2 2h3v2"/><path d="M15 3a7 7 0 0 1 4 12v6"/><path d="M11 10h.01"/></svg></button>
    <button type="button" data-view="both" aria-label="الأمام والجانب معًا" title="معًا"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="9" height="14" rx="2"/><rect x="13" y="5" width="9" height="14" rx="2"/></svg></button>
    <button type="button" data-view="camera" aria-label="الكاميرا بجانب الرسم" title="الكاميرا"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v12H4Z"/><circle cx="12" cy="13" r="4"/></svg></button>
-   <button type="button" id="viewer-replay" aria-label="أعد التشغيل" title="أعد التشغيل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg></button>
   </div>
   <p id="viewer-status" class="viewer-status" role="status"></p>
+  </div>
  </div>
 
  <div id="done" class="panel-layer party" role="dialog" aria-modal="true" aria-labelledby="done-title" hidden>
@@ -80,6 +82,10 @@
  <div id="account-list"></div>
  <form id="account-form" novalidate>
   <label for="child-name">طفل جديد</label><input id="child-name" autocomplete="off" maxlength="40" placeholder="الاسم">
+  <div class="heroes" role="radiogroup" aria-label="الشخصية">
+   <label class="hero-pick"><input type="radio" name="character" value="boy" checked><span data-kid="boy"></span><span>ولد</span></label>
+   <label class="hero-pick"><input type="radio" name="character" value="girl"><span data-kid="girl"></span><span>بنت</span></label>
+  </div>
   <p id="account-error" class="error" role="alert" hidden></p>
   <button class="primary" type="submit">ابدأ</button>
  </form>

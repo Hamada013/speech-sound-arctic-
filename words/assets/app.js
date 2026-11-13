@@ -6,13 +6,13 @@
   const $ = id => document.getElementById(id);
   const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const blank = () => ({ attempts: [], goals: {}, played: {}, lastScenario: null, run: null });
-  const isAdmin = name => name.normalize('NFKC').trim().toLocaleLowerCase() === 'hamada';
-  const sameName = name => name.normalize('NFKC').replace(/[ً-ٰٟـ]/g, '').trim().toLocaleLowerCase();
+  const Children = window.ArticulationChildren;
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   function toast(text) { const box = $('toast'); box.textContent = text; box.hidden = false; clearTimeout(toast.timer); toast.timer = setTimeout(() => { box.hidden = true; }, 3800); }
 
-  /* Everything a child earns lives inside their record, so deleting a child removes it. */
+  /* Who the children are comes from the one list shared with the home page and the other apps.
+     What a child earns here lives in this app's own record under the same id; deleting a child removes it. */
   let store = { schema: 1, active: null, children: [] };
   try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved?.schema === 1 && Array.isArray(saved.children)) store = saved; } catch {}
   store.children.forEach(child => {
@@ -23,7 +23,12 @@
     try { localStorage.setItem(KEY, JSON.stringify(store)); return true; }
     catch { toast('تعذّر حفظ التقدم على هذا الجهاز.'); return false; }
   }
-  const active = () => store.children.find(child => child.id === store.active) || null;
+  function recordOf(person) {
+    let child = store.children.find(entry => entry.id === person.id);
+    if (!child) { child = { id: person.id, progress: blank() }; store.children.push(child); }
+    return Object.assign(child, { name: person.name, created: person.created, character: person.character === 'girl' ? 'girl' : 'boy' });
+  }
+  const active = () => { const person = Children.active(); return person ? recordOf(person) : null; };
   window.ArticulationActive = active;
   const currentRun = () => active()?.progress.run || null;
 
@@ -39,14 +44,13 @@
     const child = active();
     $('account-name').textContent = child ? child.name : 'الحسابات';
     $('account-face').hidden = !child;
-    if (child) $('account-face').src = Art.portrait(child.character);
+    if (child) $('account-face').replaceChildren(window.SuiteAccounts.avatar(child, 'small'));
     $('account').setAttribute('aria-label', child ? `الحساب: ${child.name}` : 'الحسابات');
     $('test-switch').setAttribute('aria-checked', String(testMode));
     $('report-open').hidden = !testMode;
     $('home').classList.toggle('therapist', testMode);
   }
   $('bag-art').src = $('enc-bag').src = Art.decoURI('bag');
-  $('pick-boy').src = Art.portrait('boy'); $('pick-girl').src = Art.portrait('girl');
   document.querySelectorAll('dialog [data-close]').forEach(button => { button.onclick = () => { afterPick = null; button.closest('dialog').close(); }; });
 
   /* Tapping outside a window closes it. */
@@ -60,13 +64,13 @@
   /* Accounts */
   let afterPick = null;
   function choose(id) {
-    store.active = id; save(); drawHome();
+    Children.choose(id); drawHome();
     $('accounts').close();
     const next = afterPick; afterPick = null; next?.();
   }
   function drawAccounts() {
     $('child-name').value = ''; $('account-error').hidden = true;
-    window.SuiteAccounts.render($('account-list'), store.children, child => {
+    window.SuiteAccounts.render($('account-list'), Children.list(), child => {
       const select = document.createElement('button'); select.type = 'button'; select.onclick = () => choose(child.id);
       return window.SuiteAccounts.row(child, select);
     });
@@ -80,13 +84,7 @@
     event.preventDefault();
     const name = $('child-name').value.trim();
     if (!name) { $('account-error').textContent = 'اكتب اسم الطفل أولًا.'; $('account-error').hidden = false; $('child-name').focus(); return; }
-    let child = store.children.find(entry => sameName(entry.name) === sameName(name));
-    if (!child) {
-      child = { id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`, name, created: new Date().toISOString(), character: new FormData(event.target).get('character'), progress: blank() };
-      if (isAdmin(name)) child.role = 'admin';
-      store.children.push(child);
-    }
-    choose(child.id);
+    choose(Children.add(name, new FormData(event.target).get('character')).id);
   });
 
   /* Therapist switch */
@@ -352,5 +350,5 @@
   $('done-stars').replaceChildren(...[0, 1, 2].map(() => { const star = document.createElement('img'); star.src = Art.decoURI('star'); star.alt = ''; return star; }));
 
   drawHome();
-  if (!store.children.length) { drawAccounts(); $('accounts').showModal(); }
+  if (!Children.list().length) { drawAccounts(); $('accounts').showModal(); }
 })();

@@ -1,6 +1,7 @@
 /* Home, accounts, therapist switch, goals, report, the letter board, and a play through the stations of the syllable train. */
 import { Train } from './train.js';
 import { READY } from '../animations/library.js';
+import { pictureURI } from './pictures.js';
 
 const Data = window.ArticulationData, Plan = window.ArticulationPlan, Report = window.ArticulationReport, Sound = window.SyllableAudio;
 const { positions, sounds, soundById, positionName } = Data;
@@ -8,19 +9,24 @@ const KEY = 'articulation-syllables-children-v1', TEST_KEY = 'articulation-sylla
 const $ = id => document.getElementById(id);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const blank = () => ({ attempts: [], goals: {}, played: {}, run: null });
-const isAdmin = name => name.normalize('NFKC').trim().toLocaleLowerCase() === 'hamada';
-const sameName = name => name.normalize('NFKC').replace(/[ً-ٰٟـ]/g, '').trim().toLocaleLowerCase();
+const Children = window.ArticulationChildren;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const hasVideo = id => READY.includes(id);
 
 function toast(text) { const box = $('toast'); box.textContent = text; box.hidden = false; clearTimeout(toast.timer); toast.timer = setTimeout(() => { box.hidden = true; }, 3800); }
 
-/* Each child's record holds everything they earn, so deleting a child removes it. */
+/* Who the children are comes from the one list shared with the home page and the other apps.
+   What a child earns here lives in this app's own record under the same id; deleting a child removes it. */
 let store = { schema: 1, active: null, children: [] };
 try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved?.schema === 1 && Array.isArray(saved.children)) store = saved; } catch {}
 store.children.forEach(child => { child.progress = { ...blank(), ...child.progress }; });
 function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); return true; } catch { toast('تعذّر حفظ التقدم على هذا الجهاز.'); return false; } }
-const active = () => store.children.find(child => child.id === store.active) || null;
+function recordOf(person) {
+  let child = store.children.find(entry => entry.id === person.id);
+  if (!child) { child = { id: person.id, progress: blank() }; store.children.push(child); }
+  return Object.assign(child, { name: person.name, created: person.created, character: person.character === 'girl' ? 'girl' : 'boy' });
+}
+const active = () => { const person = Children.active(); return person ? recordOf(person) : null; };
 window.ArticulationActive = active;
 const currentRun = () => active()?.progress.run || null;
 
@@ -31,6 +37,8 @@ function setTestMode(on) { testMode = on; try { localStorage.setItem(TEST_KEY, o
 function drawHome() {
   const child = active();
   $('account-name').textContent = child ? child.name : 'الحسابات';
+  $('account-face').hidden = !child;
+  if (child) $('account-face').replaceChildren(window.SuiteAccounts.avatar(child, 'small'));
   $('account').setAttribute('aria-label', child ? `الحساب: ${child.name}` : 'الحسابات');
   $('test-switch').setAttribute('aria-checked', String(testMode));
   $('report-open').hidden = !testMode;
@@ -48,10 +56,10 @@ document.querySelectorAll('dialog.sheet').forEach(dialog => dialog.addEventListe
 
 /* Accounts */
 let afterPick = null;
-function choose(id) { store.active = id; save(); drawHome(); $('accounts').close(); const next = afterPick; afterPick = null; next?.(); }
+function choose(id) { Children.choose(id); drawHome(); $('accounts').close(); const next = afterPick; afterPick = null; next?.(); }
 function drawAccounts() {
   $('child-name').value = ''; $('account-error').hidden = true;
-  window.SuiteAccounts.render($('account-list'), store.children, child => { const select = document.createElement('button'); select.type = 'button'; select.onclick = () => choose(child.id); return window.SuiteAccounts.row(child, select); });
+  window.SuiteAccounts.render($('account-list'), Children.list(), child => { const select = document.createElement('button'); select.type = 'button'; select.onclick = () => choose(child.id); return window.SuiteAccounts.row(child, select); });
 }
 async function openAccounts() { if (active() && !await window.ChildAccountGate.request()) return; drawAccounts(); $('accounts').showModal(); }
 $('account').onclick = () => { afterPick = null; void openAccounts(); };
@@ -59,9 +67,7 @@ $('account-form').addEventListener('submit', event => {
   event.preventDefault();
   const name = $('child-name').value.trim();
   if (!name) { $('account-error').textContent = 'اكتب اسم الطفل أولًا.'; $('account-error').hidden = false; $('child-name').focus(); return; }
-  let child = store.children.find(entry => sameName(entry.name) === sameName(name));
-  if (!child) { child = { id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`, name, created: new Date().toISOString(), progress: blank() }; if (isAdmin(name)) child.role = 'admin'; store.children.push(child); }
-  choose(child.id);
+  choose(Children.add(name, new FormData(event.target).get('character')).id);
 });
 
 /* Therapist switch */
@@ -81,7 +87,7 @@ $('password').addEventListener('keydown', event => { if (/^\d$/.test(event.key))
 $('test-switch').onclick = () => { pin = ''; dots(); $('pin-error').textContent = ''; $('password').showModal(); };
 
 /* Report */
-function drawReport() { const child = active(); $('report-pdf').disabled = !child?.progress.attempts.length; $('report-status').hidden = true; if (child) Report.draw($('report-body'), child); else $('report-body').textContent = 'اختر حسابًا أولًا.'; }
+function drawReport() { const child = active(); $('report-pdf').disabled = !child || !Report.hasData(child); $('report-status').hidden = true; if (child) Report.draw($('report-body'), child); else $('report-body').textContent = 'اختر حسابًا أولًا.'; }
 $('report-open').onclick = () => { $('report').showModal(); drawReport(); };
 $('report-pdf').onclick = async () => {
   const status = $('report-status'), button = $('report-pdf');
@@ -103,7 +109,7 @@ function drawGoals() {
   body.replaceChildren(note, ...sounds.map(sound => {
     const chosen = child.progress.goals[sound.id] || [], box = document.createElement('section'); box.className = 'goal';
     const head = document.createElement('div'); head.className = 'goal-head';
-    const art = document.createElement('img'); art.src = sound.picture; art.alt = '';
+    const art = document.createElement('img'); art.src = pictureURI(sound.id); art.alt = '';
     const letter = document.createElement('b'); letter.textContent = sound.letter;
     const name = document.createElement('span'); name.className = 'goal-name'; name.textContent = sound.name;
     const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'switch-mini'; toggle.setAttribute('role', 'switch'); toggle.setAttribute('aria-checked', String(chosen.length > 0)); toggle.setAttribute('aria-label', `الهدف البعيد: ${sound.name}`);
@@ -133,7 +139,7 @@ function showLetters(list) {
   $('letter-tiles').replaceChildren(...list.map(sound => {
     const tile = document.createElement('button'), art = document.createElement('img'), letter = document.createElement('b');
     tile.type = 'button'; tile.className = 'letter-tile'; tile.setAttribute('aria-label', sound.name);
-    art.src = sound.picture; art.alt = ''; letter.textContent = sound.letter;
+    art.src = pictureURI(sound.id); art.alt = ''; letter.textContent = sound.letter;
     tile.append(letter, art);
     tile.onclick = () => { $('letters').hidden = true; startRun(Plan.planForSound(active(), sound)); };
     return tile;
@@ -203,30 +209,30 @@ async function playAll() {
   save(); updateControls();
 }
 
-/* Tap a car to hear it; hold it to see how the mouth makes it. Tap the engine to hear the whole train. */
+/* Tap a car to hear it; tap the creature on its roof to see how the mouth makes it. Tap the engine to hear the whole train, right to left. */
 function wire() {
   train.engine.onclick = () => { if (!busy) void playAll(); };
   train.engine.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); train.engine.onclick(); } };
-  for (const car of train.cars) {
-    let timer = null, held = false;
-    const node = car.node;
-    node.addEventListener('pointerdown', event => { if (busy) return; held = false; node.setPointerCapture?.(event.pointerId); timer = setTimeout(() => { held = true; openViewer(car.item); }, 520); });
-    const release = () => { clearTimeout(timer); if (!held && !busy && timer !== null) void playItem(car); timer = null; };
-    node.addEventListener('pointerup', release);
-    node.addEventListener('pointercancel', () => { clearTimeout(timer); timer = null; });
+  const press = (node, action) => {
+    node.onclick = () => { if (!busy) action(); };
+    node.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); node.onclick(); } };
     node.addEventListener('contextmenu', event => event.preventDefault());
-    node.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); void playItem(car); } if (event.key === 'v' || event.key === 'ر') openViewer(car.item); };
+  };
+  for (const car of train.cars) {
+    press(car.node, () => void playItem(car));
+    /* A rider shows how the mouth makes its car's syllable; where there is no animation yet it hops and says it. */
+    if (car.buddy) press(car.buddy, () => { if (hasVideo(car.item.id)) openViewer(car.item); else { train.hop(car); void playItem(car); } });
   }
 }
 
 async function arrive() {
   busy = true; updateControls();
   const entry = station(), sound = soundById(run().sound);
-  train.build(entry); wire();
+  train.build(entry, run().station); wire();
   Sound.warm(entry.items.map(item => item.audio));
   drawStations();
-  await train.arrive(run().station, sound.picture);
-  Sound.sfx('toot'); train.board();
+  await train.arrive(run().station, sound.id);
+  Sound.sfx('toot'); train.board(); train.wave();
   busy = false; updateControls();
 }
 
@@ -271,7 +277,7 @@ function openGrading() {
   $('grading-rows').replaceChildren(...train.cars.map(car => {
     const row = document.createElement('div'), pics = document.createElement('button'), buttons = document.createElement('div');
     row.className = 'grading-row'; pics.type = 'button'; pics.className = 'grading-car'; pics.setAttribute('aria-label', `اسمع ${car.item.word}`);
-    car.item.parts.forEach(part => { const img = document.createElement('img'); img.src = `images/${part}.png`; img.alt = ''; pics.append(img); });
+    car.item.parts.forEach(part => { const img = document.createElement('img'); img.src = pictureURI(part); img.alt = ''; pics.append(img); });
     pics.onclick = () => { Sound.play(car.item.audio).catch(() => toast('تعذّر تشغيل الصوت.')); };
     buttons.className = 'grades';
     GRADES.forEach(([score, kind, label, path]) => {
@@ -295,7 +301,7 @@ $('grade-open').onclick = () => { if (!busy) openGrading(); };
 $('grading-close').onclick = closeGrading;
 $('grading').addEventListener('click', event => { if (event.target === $('grading')) closeGrading(); });
 
-/* ---------- How the mouth makes it: the animation library, full screen ---------- */
+/* ---------- How the mouth makes it: the animation in a window over the train ---------- */
 let viewerItem = null, view = 'front', camera = null;
 function stopCamera() { camera?.getTracks().forEach(track => track.stop()); camera = null; }
 function video(side, muted) {
@@ -321,7 +327,8 @@ async function showView(next) {
     } catch { status.textContent = 'لا يمكن فتح الكاميرا. اسمح باستخدامها من إعدادات المتصفح.'; }
   }
   panes.className = `viewer-panes ${nodes.length > 1 ? 'two' : 'one'}`;
-  panes.replaceChildren(...nodes);
+  /* Each view sits in its own box; Safari sizes a video in a grid cell against the whole grid otherwise. */
+  panes.replaceChildren(...nodes.map(node => { const pane = document.createElement('div'); pane.className = 'viewer-pane'; pane.append(node); return pane; }));
   const videos = nodes.filter(node => node.src);
   await Promise.all(videos.map(node => node.play().catch(() => {})));
 }
@@ -329,14 +336,15 @@ function openViewer(item) {
   if (!hasVideo(item.id)) { toast('رسم الفم لهذا المقطع غير جاهز بعد.'); return; }
   token++; Sound.stop();
   viewerItem = item;
+  $('viewer-title').textContent = item.word;
   $('viewer').hidden = false;
   void showView('front');
 }
 function closeViewer() { stopCamera(); $('viewer-panes').replaceChildren(); $('viewer').hidden = true; viewerItem = null; }
 document.querySelectorAll('.viewer-modes [data-view]').forEach(button => { button.onclick = () => showView(button.dataset.view); });
-$('viewer-replay').onclick = () => { document.querySelectorAll('#viewer-panes video[src]').forEach(node => { node.currentTime = 0; void node.play().catch(() => {}); }); };
 $('viewer-close').onclick = closeViewer;
 $('viewer').addEventListener('keydown', event => { if (event.key === 'Escape') closeViewer(); });
+$('viewer').addEventListener('click', event => { if (event.target === $('viewer')) closeViewer(); });
 
 /* ---------- Entering and leaving ---------- */
 async function enterGame() {
@@ -348,7 +356,7 @@ async function enterGame() {
   if (!playing) history.pushState({ train: true }, '');
   playing = true;
   train?.destroy();
-  train = new Train($('world'), { sfx: Sound.sfx });
+  train = new Train($('world'), { sfx: Sound.sfx, hasVideo });
   $('loading').hidden = true;
   await arrive();
 }
@@ -366,5 +374,5 @@ $('done-again').onclick = () => { const r = run(); startRun({ sound: soundById(r
 $('turn').onclick = () => { $('turn').hidden = true; };
 
 drawHome();
-if (!store.children.length) { drawAccounts(); $('accounts').showModal(); }
+if (!Children.list().length) { drawAccounts(); $('accounts').showModal(); }
 window.SyllableTrain = { train: () => train, run, stations: () => stations };

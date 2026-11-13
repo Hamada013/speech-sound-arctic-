@@ -1,4 +1,5 @@
 import { LETTERS, CONSONANTS, MODES, bank, shuffle, newAssessment, summarize, addResponse, validSession } from './model.mjs';
+import { pictureURI } from './assets/pictures.js';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -110,7 +111,7 @@ function initializeActivity() {
 function startActivity() {
     const setup = state.setup; if (!setup?.letters.length) return;
     if (['listening','production'].includes(setup.kind)) {
-        const session=newAssessment(setup.kind,setup.letters,setup.mode); writeSession(session); state.session=session;
+        const session=newAssessment(setup.kind,setup.letters,setup.mode); session.child=window.ArticulationChildren?.active()?.id||null; /* the child's report adds this test to the game's grades */ writeSession(session); state.session=session;
     } else state.session=null;
     state.kind=setup.kind;state.letters=[...setup.letters];state.mode=setup.mode;state.filter='all';state.page=0;
     $('#setup-dialog').close(); initializeActivity();
@@ -119,7 +120,7 @@ function startActivity() {
     else void safe(renderTrial)();
 }
 function syllableMarkup(item) {
-    return `<span class="syllable-parts" dir="rtl">${item.parts.map(id=>`<span class="syllable-part"><img src="images/${id}.png" alt="" decoding="async"></span>`).join('')}</span>`;
+    return `<span class="syllable-parts" dir="rtl">${item.parts.map(id=>`<span class="syllable-part"><img src="${pictureURI(id)}" alt="" decoding="async"></span>`).join('')}</span>`;
 }
 function syllableButton(item, handler, extraClass='') {
     const button=document.createElement('button');button.type='button';button.className=`syllable-card ${extraClass}`;

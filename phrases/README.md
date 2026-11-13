@@ -1,0 +1,15 @@
+# العبارات (phrases)
+
+The third part of the app: the child builds a tower of ten bricks, and each brick holds a short phrase (two or three words, fusha) with the target sound.
+
+**A play.** One sound, ten phrases, in one of five scenes, a different one each play (never the same twice in a row): a brick tower, a castle, an ice cream (scoops on a cone), a cake (layers on a stand) and a rocket (sections over an engine). A piece drops onto the crane hook with a "?" window. Tapping it zooms its picture out to fill the screen and the phrase plays (the child always hears it and says it after it; the speaker button repeats it). The child taps the piece button, or, with the therapist switch on (password 013), the therapist taps right, partial or wrong (1, 0.5, 0) under the picture. The picture zooms back into the piece. Right or partial: the piece swings slowly and a tap drops it; off-centre pieces wobble and stick, the stack never falls. Wrong: the piece tumbles off the stack and the same phrase comes straight back on a new piece; the report keeps the last grade. After ten, the last piece lands (roof, battlements, cherry, candles, nose cone), the view zooms out to show the whole stack, and the child taps the scene's ending: a wrecking ball knocks the tower down, fireworks over the castle, a big face licks the scoops, a cloud blows the candles out, or the rocket launches.
+
+**Goals.** The goal is a sound (all 28, same ids and order as the words part); there are no short goals. Reached means 80% in two full sessions in a row, as in the other parts. Without goals, the report picks, then the letter board.
+
+**Phrases and pictures.** `assets/data.js` has the 280 phrases, ten per sound, at least one per sound with the sound at the end of a word, and how to draw each. `assets/pictures.js` composes each picture from the words part's drawings (`../words/assets/art-*.js`, given the approved look by `skin()`): big or small beside a child, two things side by side, one on or in another, up in the sky, a child eating, holding or riding, plus small marks for a mood. "I ate…" phrases show the child's own boy or girl. To change a phrase, edit data.js, keep the picture's objects to keys that exist in the words kit, then run `node scripts/recordings.cjs`.
+
+**Recordings.** `sounds/README.txt` lists every phrase with its file name (`<number>.m4a`); `node scripts/recordings.cjs` rewrites it and marks the ones already recorded. Until a recording is there the game stays silent for that phrase and hides the speaker button.
+
+**Report.** `assets/report.js`: a ring of right, partial and wrong with the overall score, a bar per sound, a progress line, then each sound's details, and the PDF. `summaryOf(child)` returns the results in the shape every part should share, for the combined report.
+
+**Files.** `index.html` home and windows; `assets/app.js` flow, goals, accounts, grading; `assets/tower.js` the five scenes, their pieces and endings; `assets/tower.css` the stage and the picture card; styles for the home, windows, letter board and report come from `../syllable/assets/styles.css`; accounts from `../assets/`.
