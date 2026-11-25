@@ -1,0 +1,27 @@
+/* Articulation and the clinic system (2026-11), with assets/clinic.js: Cairo for the plan window and its PDF, one
+   therapist lock in the header, and parents' mode. */
+@import url(vendor/cairo.css);
+
+/* The header buttons clinic.js adds take each page's own icon-button look. */
+.artic-clinic-button[hidden]{display:none!important}
+
+/* One therapist switch: the parts' old switch rows and the session card's unlock button give way to the header lock. */
+#test-switch,#unlock{display:none!important}
+/* Goals are for the therapist: the parts' goals button shows only while the lock is open. */
+body:not(.artic-therapist) #goals-open{display:none!important}
+
+/* Parents' mode (the clinic start screen with the child's name and number): no articulation test, no reports, no
+   approaches and no plan page, on the home page, in the side bar and in the parts' headers. */
+body.artic-parents :is(a.test-card,a.reports-link,a[data-part="approaches"],#report-open,#goals-open,
+  a[href$="test/index.html"],a[href$="reports/index.html"],a[href$="approaches/index.html"],a[href$="plan/index.html"]){display:none!important}
+/* Parents grade at home with two words only, and the syllable part's therapist tools (with its tests) stay hidden. */
+body.artic-parents :is(.grade.semi,#therapist-tools){display:none!important}
+body.artic-parents .grade:not([id]) span{display:block;font-size:15px;font-weight:800}
+/* The game character choice (boy or girl), asked once in the games. */
+.artic-character h2{margin:0 0 14px;text-align:center;font-size:24px}
+.artic-character-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.artic-character-row button{display:grid;justify-items:center;gap:8px;min-height:180px;padding:14px;border:2px solid #e3ecf2;border-radius:24px;background:#fff;cursor:pointer;font:inherit}
+.artic-character-row button:focus-visible{outline:3px solid #0284c7;outline-offset:3px}
+.artic-character-row img{width:120px;height:120px;object-fit:contain}
+.artic-character-row b{font-size:22px}
+:is(.artic-character-row button):not(:disabled):active{scale:.96}

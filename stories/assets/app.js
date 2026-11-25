@@ -5,7 +5,7 @@
 const Data = window.ArticulationData, Plan = window.ArticulationPlan, Report = window.ArticulationReport, Sound = window.PhraseAudio, Pictures = window.PhrasePictures, Children = window.ArticulationChildren;
 const { positions, sounds, soundById, positionName } = Data;
 const PART = window.PartConfig || { id: 'stories', name: 'القصص' };
-const KEY = `articulation-${PART.id}-children-v1`, TEST_KEY = `articulation-${PART.id}-test-v1`, PASSWORD = '013', PAGES = 5;
+const KEY = `articulation-${PART.id}-children-v1`, TEST_KEY = 'articulation-therapist', PASSWORD = '013', PAGES = 5;
 const $ = id => document.getElementById(id);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const blank = () => ({ attempts: [], goals: {}, played: {}, run: null });
@@ -31,7 +31,9 @@ window.ArticulationActive = active;
 const currentRun = () => active()?.progress.run || null;
 
 let testMode = false;
-try { testMode = localStorage.getItem(TEST_KEY) === 'on'; } catch {}
+try { testMode = localStorage.getItem(TEST_KEY) === 'on' || !!window.ArticulationClinic?.parents(); } catch {}
+/* One therapist switch for the whole app: the lock in the header (assets/clinic.js, assets/intervention.js). */
+window.addEventListener('voc-therapist-change', event => { testMode = !!event.detail?.active || !!window.ArticulationClinic?.parents(); drawHome(); });
 function setTestMode(on) { testMode = on; try { localStorage.setItem(TEST_KEY, on ? 'on' : 'off'); } catch { toast('تعذّر حفظ الإعداد على هذا الجهاز.'); } drawHome(); }
 
 function drawHome() {
@@ -308,9 +310,9 @@ function finish() {
   const child = active(), r = run();
   if (r.finished) return;
   const date = new Date().toISOString();
-  if (Object.keys(r.scores).length) child.progress.attempts.push({ date, run: r.id, sound: r.sound, zone: 'pages', scores: { ...r.scores } });
+  if (Object.keys(r.scores).length) window.ArticulationClinic.keep(child.progress, { date, run: r.id, sound: r.sound, zone: 'pages', scores: { ...r.scores } });
   const { right, wrong } = r.counts;
-  if (right + wrong) child.progress.attempts.push({ date, run: r.id, sound: r.sound, zone: 'retell', scores: Object.fromEntries([...Array.from({ length: right }, (_, i) => [`right-${i + 1}`, 1]), ...Array.from({ length: wrong }, (_, i) => [`wrong-${i + 1}`, 0])]) });
+  if (right + wrong) window.ArticulationClinic.keep(child.progress, { date, run: r.id, sound: r.sound, zone: 'retell', scores: Object.fromEntries([...Array.from({ length: right }, (_, i) => [`right-${i + 1}`, 1]), ...Array.from({ length: wrong }, (_, i) => [`wrong-${i + 1}`, 0])]) });
   r.finished = true; save();
   Sound.sfx('fanfare');
   const result = $('done-result'); result.replaceChildren();

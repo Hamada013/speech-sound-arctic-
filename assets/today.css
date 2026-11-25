@@ -25,3 +25,11 @@
 .today-next svg path[d^="M8 5v14"]{fill:currentColor}
 @keyframes today-pop{0%{transform:scale(.3)}70%{transform:scale(1.2)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.today-timer.over,.today-stars i.on:last-of-type{animation:none}.today-timer .fill{transition:none}}
+/* A new sticker at the end of today's session (assets/today.js). */
+.today-sticker{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 12px;text-align:center}
+.today-sticker b{font-size:18px;color:#8a5a00}
+.today-sticker-badge{position:relative;display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:#fff3cf;border:4px dashed #f0b63b;color:#8a5a00;font-size:40px;font-weight:800;line-height:1;box-shadow:0 8px 20px #f0b63b55;animation:today-sticker-in .5s cubic-bezier(.2,.7,.2,1) both}
+.today-sticker-badge svg{width:40px;height:40px;fill:#f0b63b;stroke:#b27b10}
+.today-sticker-badge i{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;pointer-events:none}
+@keyframes today-sticker-in{0%{opacity:0;transform:scale(.4) rotate(-15deg)}70%{opacity:1;transform:scale(1.08) rotate(4deg)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.today-sticker-badge{animation:none}}

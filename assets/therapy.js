@@ -108,6 +108,51 @@
     const old = planOf(childId), days = { ...(old?.days || {}) };
     if (days[today()] && !days[today()].some(s => s.activities.some(a => a.done))) delete days[today()];
     const plan = { schema: 1, id: Date.now().toString(36), child: childId, created: new Date().toISOString(), source: { kind: results.source || 'test', date: results.date || today(), assessment: results.assessment || null }, sounds: soundsOf(clean), patterns: patternsOf(clean), settings: old?.settings || { activities: 3, perDay: 2 }, days, last: old?.last || {} };
+    savePlan(plan); applyGoals(plan); writeGoals(plan);
+    return plan;
+  }
+
+  /* ---------- One plan: the therapist's goal window (assets/intervention.js) and this engine ---------- */
+  /* Goal ids (assets/intervention-goals.js): S-<letter>-<level> for a sound at a level, S-P-<pattern> for a pattern. */
+  const goalIdsOf = plan => [
+    ...plan.sounds.flatMap(sound => LADDER.slice(Math.max(0, LADDER.indexOf(sound.from))).filter(level => level !== 'syllables' || SYLLABLE_IDS[sound.letter]).map(level => `S-${sound.letter}-${level}`)),
+    ...plan.patterns.map(pattern => `S-P-${pattern.id}`),
+  ];
+  /* A new plan from the test writes its goals into the child's plan window: goals that stay keep their ratings,
+     the old plan's sound and pattern goals that are no longer needed go, other goals stay. */
+  function writeGoals(plan) {
+    const Children = root.ArticulationChildren, child = Children?.list?.().find(entry => entry.id === plan.child);
+    if (!child || !Children.update) return;
+    const wanted = new Set(goalIdsOf(plan)), saved = child.intervention || {}, kept = (saved.goals || []).filter(goal => wanted.has(goal.id) || !/^S-/.test(goal.id));
+    const have = new Set(kept.map(goal => goal.id)), added = [...wanted].filter(id => !have.has(id)).map(id => ({ id, rating: null, history: [], added: today() }));
+    Children.update(plan.child, { intervention: { childName: saved.childName || child.name, therapist: saved.therapist || '', start: saved.start || today(), ...saved, goals: [...kept, ...added], updated: new Date().toISOString() } });
+  }
+  /* The therapist changed the goals in the window: the engine follows. A sound with any goal is in the plan, starting
+     at its lowest chosen level; a sound without goals leaves it; the same for patterns. Days practised stay. */
+  function fromGoals(childId, ids) {
+    if (!childId) return null;
+    const levels = {}, patternIds = new Set();
+    for (const id of ids || []) {
+      const pattern = /^S-P-(.+)$/.exec(id), sound = !pattern && /^S-(.+)-(syllables|words|phrases|sentences|stories)$/.exec(id);
+      if (pattern) patternIds.add(pattern[1]);
+      else if (sound) (levels[sound[1]] ||= []).push(sound[2]);
+    }
+    const old = planOf(childId);
+    const plan = old || { schema: 1, id: Date.now().toString(36), child: childId, created: new Date().toISOString(), source: { kind: 'goals', date: today(), assessment: null }, sounds: [], patterns: [], settings: { activities: 3, perDay: 2 }, days: {}, last: {} };
+    const sounds = Object.entries(levels).map(([letter, list]) => {
+      const from = LADDER.find(level => list.includes(level)), had = plan.sounds.find(sound => sound.letter === letter);
+      return had ? { ...had, from } : { letter, said: { first: null, middle: null, last: null }, words: [], from, held: false };
+    }).sort((a, b) => ORDER.indexOf(a.letter) - ORDER.indexOf(b.letter));
+    const approach = patternIds.size >= 3 ? 'cycles' : null;
+    const patterns = [...patternIds].filter(id => PATTERNS.some(p => p.id === id)).map(id => {
+      const had = plan.patterns.find(p => p.id === id), base = PATTERNS.find(p => p.id === id);
+      return { ...(had || { id, name: base.name, count: 0, examples: [], held: false }), approach: approach || had?.approach || 'pairs' };
+    });
+    const before = JSON.stringify([plan.sounds, plan.patterns]);
+    plan.sounds = sounds; plan.patterns = patterns;
+    if (old && JSON.stringify([plan.sounds, plan.patterns]) === before) return plan;
+    // The goals of sounds and patterns that left the plan are cleared from the parts too.
+    if (old) { const gone = { sounds: old.sounds.filter(s => !sounds.some(n => n.letter === s.letter)), patterns: [] }; if (gone.sounds.length) applyGoals({ child: childId, ...gone }, true); }
     savePlan(plan); applyGoals(plan);
     return plan;
   }
@@ -269,7 +314,18 @@
     savePlan(plan); applyGoals(plan);
     const asked = read(TODAY_KEY, null);
     if (asked?.key === activity.key) write(TODAY_KEY, { ...asked, key: null });
-    return { session, activity, next: session.activities.find(a => !a.done) || null };
+    const next = session.activities.find(a => !a.done) || null;
+    const sticker = next ? null : award(child, session);
+    return { session, activity, next, sticker };
+  }
+  /* The sticker album (stickers/): finishing today's session gives one sticker, a picture of a word with the session's
+     first sound (the album draws it). Kept with the child as { date, session, letter }; once per session. */
+  function award(child, session) {
+    const Children = root.ArticulationChildren; if (!child || !Children?.update) return null;
+    const have = child.stickers || [];
+    if (have.some(s => s.session === session.id)) return null;
+    const sound = session.activities.find(a => a.letter), sticker = { date: today(), session: session.id, letter: sound?.letter || null };
+    return Children.update(child.id, { stickers: [...have, sticker] }) ? sticker : null;
   }
 
   /* ---------- What the plan page and the home page show ---------- */
@@ -297,11 +353,20 @@
     play: '<path d="M8 5v14l11-7Z"/>',
     home: '<path d="m3 10 9-7 9 7v10H5V10M9 21v-8h6v8"/>',
   };
-  const therapistOpen = () => read(OPEN_KEY, null) === 'on';
-  const setTherapist = on => write(OPEN_KEY, on ? 'on' : 'off');
+  /* One therapist switch for the whole app (2026-11): the lock in each page's header, password 013, kept by the shared
+     assets/intervention.js as 'on' under articulation-therapist. The home page's old switch (OPEN_KEY) counts once. */
+  const THERAPIST_KEY = 'articulation-therapist';
+  try { if (localStorage.getItem(OPEN_KEY) === '"on"' && !localStorage.getItem(THERAPIST_KEY)) localStorage.setItem(THERAPIST_KEY, 'on'); localStorage.removeItem(OPEN_KEY); } catch {}
+  const therapistOpen = () => { try { return localStorage.getItem(THERAPIST_KEY) === 'on'; } catch { return false; } };
+  const setTherapist = on => {
+    try { on ? localStorage.setItem(THERAPIST_KEY, 'on') : localStorage.removeItem(THERAPIST_KEY); } catch { return false; }
+    root.dispatchEvent?.(new CustomEvent('voc-therapist-change', { detail: { active: !!on } }));
+    return true;
+  };
 
   const api = { KEY, TODAY_KEY, TARGET, STREAK, AT_ONCE, MINUTES, PARTS, LADDER, PATTERNS, FEATURES, ZONE_NAMES, WORD_IDS, SYLLABLE_IDS, PARENT_NAMES, ICONS,
-    today, url, planOf, savePlan, remove, create, status, partsOf, recordIn, zoneState, percentOf, sizeOf, applyGoals, day, another, calendar, begin, current, done, label, therapistOpen, setTherapist, soundsOf, patternsOf };
+    today, url, planOf, savePlan, remove, create, status, partsOf, recordIn, zoneState, percentOf, sizeOf, applyGoals, day, another, calendar, begin, current, done, label, therapistOpen, setTherapist, soundsOf, patternsOf,
+    THERAPIST_KEY, goalIdsOf, writeGoals, fromGoals };
   root.ArticulationTherapy = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

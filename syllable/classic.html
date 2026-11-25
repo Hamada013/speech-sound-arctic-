@@ -11,6 +11,9 @@
  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
  <link rel="stylesheet" href="syllables.css">
  <script src="../assets/children.js"></script>
+ <!-- Parents' mode (the clinic start screen with the child's name and number): no listening or production test. -->
+ <script>try{if(JSON.parse(localStorage.getItem('speech-entry-v1'))?.mode==='parent')document.documentElement.classList.add('artic-parents');}catch{}</script>
+ <style>.artic-parents [data-open=listening],.artic-parents [data-open=production]{display:none!important}</style>
  <script type="module" src="syllables.js"></script>
 </head>
 <body>

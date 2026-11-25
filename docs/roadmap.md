@@ -28,6 +28,17 @@ The repository must never link to or depend on the main speech website. Links on
 - **New look:** the app home (greeting with the child's face, coloured session card, part tiles in the fixed part colours with each part's latest score, rise-in and press motion) and the test home (teal hero, child card with a ring of items recorded, big tiles; one tap starts a test for the app's child). Pages fade into each other (view transitions in `assets/nav.css`); all motion stops with reduced motion.
 - **The speech website** links its forms card to `test/` here (website branch `link-articulation-app`, source `scripts/site-pages.cjs`). Its old copy stays at its address for the research tools; both sites are on `hamada013.github.io`, so tests saved there are seen here.
 
+## Done 2026-11-25 (with the user's choices)
+
+- **Linked to the clinic reports page** (tools/accounts) like the other speech apps: `assets/clinic.js` on every page (the child for the plan window, the start screen and sync; a summary of each child kept as `child.summary`: every sound by part, the latest test, patterns, sessions, home practice), the clinic start screen (`speech-entry.js`), «ملف الطفل» and clinic sync (`child-file.js`, `speech-sync.js`), app id `articulation`. The reports page shows a sound × level grid.
+- **Accounts:** the standard «حسابات الأطفال» window (the shared `assets/accounts.js`, 25 drawn animal heads) replaces the outline faces. The game character (boy or girl) is asked once inside the games with the game's own portraits.
+- **One therapist switch** for the whole app: the lock in each page's header (013, `articulation-therapist`, the shared `assets/intervention.js`). The parts' old switch rows are gone; goals and reports show only while it is open; the test card too.
+- **One plan in the standard «خطة التدخل» window:** `assets/intervention-goals.js` builds the goals from the engine (a goal per sound with a short goal per level, one per error pattern), percentages from `zoneState`, ready plans from the child's test plan. The test's plan writes its goals there; editing the goals updates the engine (`ArticulationTherapy.fromGoals`).
+- **Parents' mode** (the start screen with the child's name and number): no test (also the syllable listening and production tests), no reports, no approaches, no plan page. Parents mark «صح» / «مرة ثانية»; their rounds go to `progress.home` (`ArticulationClinic.keep`), shown apart, never in the percentages.
+- **Home:** the child's head and name (no greeting word), today as a road ending in a star, «ابدأ جلسة اليوم», white part tiles, a launch logo that pops and bounces once per visit (`assets/home.css`).
+- **Sticker album** (`stickers/`): finishing today's session gives one sticker (`award` in `therapy.js`), drawn as a word picture with the session's sound; the session's end shows it with a chime and dots (`today.js`).
+- **Game feel** (`assets/feel.js`, `feel.css`): a soft chime on every grade (never a buzzer), dots at the button, the word picture or the train's driver hops on a right answer, a bigger burst after three in a row, the star bar pops, and the word card rises in. Only the sounds stay with reduced motion.
+
 ## Rules for every part
 
 - **Graphs first, few words.** Every report and result screen shows the data as charts: a ring or pie for right, partial and wrong; bars per source, sound or level; a colour grid for sounds by level; lines for progress. Text is short labels; tables only as a collapsed detail. Source and level colours stay fixed wherever they appear.

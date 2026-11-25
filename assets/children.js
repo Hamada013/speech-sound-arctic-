@@ -49,8 +49,12 @@
     if (fresh) store = { schema: 1, active: null, children: [], deletedChildren: {} };
     store.deletedChildren ||= {};
     if (merge(storage, store, fresh) || fresh) try { storage.setItem(KEY, JSON.stringify(store)); } catch {}
+    /* The accounts window (the shared assets/accounts.js) removes a deleted child from this list only; their
+       progress in every part and their plan go on the next load. */
+    for (const id of Object.keys(store.deletedChildren)) if (left(storage, id)) forget(storage, id);
     return store;
   }
+  const left = (storage, id) => APPS.some(app => read(storage, appKey(app))?.children?.some?.(child => child.id === id)) || !!read(storage, 'articulation-plans-v1')?.plans?.[id];
 
   /* Deleting a child removes them from the list and their progress from every app on this device. */
   function forget(storage, id) {
@@ -85,12 +89,20 @@
     add(name, character) {
       let child = store.children.find(entry => sameName(entry.name) === sameName(name));
       if (!child) {
-        child = { id: newId(), name, created: new Date().toISOString(), character: character === 'girl' ? 'girl' : 'boy' };
+        // The game character is chosen in the games when it is not given here (assets/clinic.js).
+        child = { id: newId(), name, created: new Date().toISOString(), ...(character ? { character: character === 'girl' ? 'girl' : 'boy' } : {}) };
         store.children.push(child);
         save();
       }
       return child;
     },
     reload() { if (storage) store = load(storage); return store; },
+    /* Saves more about a child (the intervention plan, the summary for the clinic) without touching who they are. */
+    update(id, patch) {
+      const fresh = storage ? load(storage) : store, child = fresh.children.find(entry => entry.id === id);
+      if (!child) return false;
+      Object.assign(child, patch); store = fresh;
+      return save();
+    },
   };
 })(globalThis);

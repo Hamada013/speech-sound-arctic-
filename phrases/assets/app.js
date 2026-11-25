@@ -5,7 +5,7 @@ const Data = window.ArticulationData, Plan = window.ArticulationPlan, Report = w
 const { positions, sounds, soundById, positionName } = Data;
 /* The same code runs العبارات and الجمل; the page names the part (window.PartConfig), which keeps its own records and recordings. */
 const PART = window.PartConfig || { id: 'phrases', name: 'العبارات' };
-const KEY = `articulation-${PART.id}-children-v1`, TEST_KEY = `articulation-${PART.id}-test-v1`, PASSWORD = '013', PER_RUN = 10;
+const KEY = `articulation-${PART.id}-children-v1`, TEST_KEY = 'articulation-therapist', PASSWORD = '013', PER_RUN = 10;
 const $ = id => document.getElementById(id);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const blank = () => ({ attempts: [], goals: {}, played: {}, run: null });
@@ -31,7 +31,9 @@ window.ArticulationActive = active;
 const currentRun = () => active()?.progress.run || null;
 
 let testMode = false;
-try { testMode = localStorage.getItem(TEST_KEY) === 'on'; } catch {}
+try { testMode = localStorage.getItem(TEST_KEY) === 'on' || !!window.ArticulationClinic?.parents(); } catch {}
+/* One therapist switch for the whole app: the lock in the header (assets/clinic.js, assets/intervention.js). */
+window.addEventListener('voc-therapist-change', event => { testMode = !!event.detail?.active || !!window.ArticulationClinic?.parents(); drawHome(); });
 function setTestMode(on) { testMode = on; try { localStorage.setItem(TEST_KEY, on ? 'on' : 'off'); } catch { toast('تعذّر حفظ الإعداد على هذا الجهاز.'); } drawHome(); }
 
 function drawHome() {
@@ -271,7 +273,7 @@ async function finish() {
   await ending;
   hint.hidden = true; hint.style.left = hint.style.top = ''; delete hint.dataset.hint;
   const graded = Object.keys(r.scores);
-  if (graded.length && !r.finished) child.progress.attempts.push({ date: new Date().toISOString(), run: r.id, sound: r.sound, zone: r.goal, scores: { ...r.scores } });
+  if (graded.length && !r.finished) window.ArticulationClinic.keep(child.progress, { date: new Date().toISOString(), run: r.id, sound: r.sound, zone: r.goal, scores: { ...r.scores } });
   r.finished = true; save();
   const result = $('done-result'); result.replaceChildren();
   const attempt = child.progress.attempts.filter(entry => entry.run === r.id).at(-1);

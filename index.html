@@ -5,7 +5,7 @@
 <title>تدريب النطق</title>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/accounts.css"><link rel="stylesheet" href="assets/parent-gate.css">
-<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" defer></script><script src="assets/therapy.js" defer></script><script src="assets/results.js" defer></script><script src="assets/nav.js" defer></script>
+<script src="assets/children.js" defer></script><script src="assets/parent-gate.js" defer></script><script src="assets/accounts.js" data-app="articulation" defer></script><script src="assets/therapy.js" defer></script><script src="assets/results.js" defer></script><script src="assets/clinic.js" defer></script><script src="assets/intervention-goals.js" defer></script><script src="assets/intervention.js" defer></script><script src="assets/child-file.js" data-app="articulation" defer></script><script src="assets/speech-sync.js" data-app="articulation" defer></script><script src="assets/speech-entry.js" data-app="articulation" defer></script><script src="assets/nav.js" defer></script>
 <style>
 :root{--ink:#22445a;--muted:#5c7285;--line:#dceaf4;--green:#3f9a6c}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}[hidden]{display:none!important}
@@ -87,7 +87,7 @@ nav .app.locked{opacity:.5;box-shadow:none}.lock-badge{position:absolute;top:10p
 /* Phones held sideways: a smaller title and all five parts in one row. */
 @media (orientation:landscape) and (max-height:520px){body.has-plan .hero{display:none}.today{width:min(100%,960px);display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:center;padding:10px 14px}.today-head{grid-column:1 / -1;margin-bottom:6px}.task{min-height:84px;flex-direction:row;justify-content:center;gap:8px}.task b{font-size:30px}.today-foot{flex-direction:column;margin:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style><link rel="stylesheet" href="assets/nav.css">
+</style><link rel="stylesheet" href="assets/nav.css"><link rel="stylesheet" href="assets/intervention.css"><link rel="stylesheet" href="assets/clinic.css"><link rel="stylesheet" href="assets/home.css">
 </head><body>
 <header>
  <a class="reports-link" href="reports/index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10m6 10V4m6 16v-7m6 7H2"/></svg><span>التقارير</span></a>
@@ -100,8 +100,9 @@ nav .app.locked{opacity:.5;box-shadow:none}.lock-badge{position:absolute;top:10p
    <a id="today-plan" class="icon" href="plan/index.html" aria-label="الخطة العلاجية" title="الخطة العلاجية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h4v-4h4v-4h4V8h4"/><path d="M19 8V3l3 1.5L19 6"/></svg></a>
    <button id="unlock" class="icon" type="button" aria-pressed="false" aria-label="وضع المعالج: فتح كل الأجزاء" title="وضع المعالج"></button></div>
   <ol id="today-list" class="today-list"></ol>
-  <div class="today-foot"><button id="today-go" class="primary" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg><span>ابدأ</span></button><p id="today-end" class="today-end" hidden></p><button id="today-more" class="primary" type="button" hidden>تدريب ثانٍ</button><div id="today-days" class="mini-days" role="img"></div></div>
+  <div class="today-foot"><button id="today-go" class="primary" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg><span>ابدأ جلسة اليوم</span></button><p id="today-end" class="today-end" hidden></p><button id="today-more" class="primary" type="button" hidden>تدريب ثانٍ</button><div id="today-days" class="mini-days" role="img"></div></div>
  </section>
+ <a id="stickers-link" class="stickers-link" href="stickers/index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12l4 4v12H4z"/><path d="M16 4v4h4"/><path d="m12 9 1.3 2.7 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4Z"/></svg><b>ألبوم الملصقات</b><small id="stickers-count" hidden></small></a>
  <nav aria-label="التطبيقات">
   <a class="app test-card" href="test/index.html" data-part="test" style="--c:#0f9fb5"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2"/><path d="m9 13 2 2 4-4"/></svg></span><span class="app-text"><b>اختبار النطق</b><small>قبل التدريب وبعده</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
   <a class="app" href="syllable/syllable.html" data-part="syllables" style="--c:#6250d6"><span class="app-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="6" height="7" rx="1.5"/><rect x="9" y="9" width="6" height="7" rx="1.5"/><path d="M16 16V7h3l3 4v5Z"/><circle cx="5" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/></svg></span><span class="app-text"><b>المقاطع</b><small>قطار المقاطع</small></span><span class="app-score" hidden></span><span class="app-bar" hidden><i></i></span></a>
@@ -138,13 +139,25 @@ nav .app.locked{opacity:.5;box-shadow:none}.lock-badge{position:absolute;top:10p
 
 <script>
 /* The one account for every app: chosen here, and the same child is active inside each app. */
+/* Launch: the logo pops in and bounces once per visit, not over the clinic start screen (assets/home.css). */
+(() => {
+  try { if (sessionStorage.getItem('articulation-launched')) return; sessionStorage.setItem('articulation-launched', '1'); } catch { return; }
+  const veil = document.createElement('div'); veil.className = 'artic-launch'; veil.setAttribute('aria-hidden', 'true');
+  veil.innerHTML = '<div><img src="assets/logo.webp" alt=""><b>تدريب النطق</b></div>';
+  document.documentElement.append(veil);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(() => { veil.classList.add('out'); setTimeout(() => veil.remove(), 300); }, reduced ? 400 : 1850);
+  document.addEventListener('DOMContentLoaded', () => { if (document.querySelector('dialog.speech-entry')) veil.remove(); });
+})();
 document.addEventListener('DOMContentLoaded', () => {
   const Children = window.ArticulationChildren, $ = id => document.getElementById(id);
   let next = null;
   /* The greeting shows the child's face; each tile its part's latest score (assets/results.js). */
   function drawHero() {
     const child = Children.active();
-    $('hero-hello').textContent = child ? `مرحبًا ${child.name}` : 'مع حمادة';
+    // The child's own head and name, no greeting word (2026-11).
+    $('hero-hello').textContent = child ? child.name : '';
+    const stickers = child?.stickers?.length || 0; $('stickers-count').textContent = digits(stickers); $('stickers-count').hidden = !stickers;
     $('hero-face').replaceChildren(child && window.SuiteAccounts ? window.SuiteAccounts.avatar(child, 'pick') : Object.assign(document.createElement('img'), { src: 'assets/logo.webp', alt: '' }));
     const parts = child && window.ArticulationResults ? window.ArticulationResults.all(child.id) : [];
     document.querySelectorAll('nav a.app[data-part]').forEach(link => {
@@ -210,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
       button.onclick = () => go(activity.key);
       item.append(button); return item;
     }));
+    // The road ends in a star that lights up when today's session is done.
+    const star = document.createElement('li'); star.className = `road-end${list.length && !next ? ' done' : ''}`; star.setAttribute('aria-hidden', 'true');
+    star.innerHTML = '<svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>'; $('today-list').append(star);
     $('today-go').hidden = !next;
     $('today-end').hidden = !!next; $('today-end').textContent = !list.length ? 'لا أنشطة في الخطة الآن.' : info.more ? 'أحسنت! انتهى تدريب اليوم.' : 'أحسنت! انتهى تدريب اليوم. إلى الغد.';
     $('today-more').hidden = !info.more;
@@ -220,7 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function go(key) { const child = Children.active(), href = child && T.begin(child.id, key); if (href) location.href = href; }
   $('today-go').onclick = () => { const child = Children.active(), info = child && T.day(child.id), next = info?.open?.activities.find(a => !a.done); if (next) go(next.key); };
   $('today-more').onclick = () => { const child = Children.active(); if (child && T.another(child.id)) drawToday(); };
-  function gate(then) { after = then; $('gate-code').value = ''; $('gate-error').hidden = true; $('gate').showModal(); $('gate-code').focus(); }
+  /* One therapist switch for the whole app: a locked part asks through the header lock (assets/intervention.js). */
+  function gate(then) { after = then; const lock = document.querySelector('[data-therapist]'); if (lock) { lock.click(); return; } $('gate-code').value = ''; $('gate-error').hidden = true; $('gate').showModal(); $('gate-code').focus(); }
+  window.addEventListener('voc-therapist-change', event => { drawToday(); const then = after; after = null; if (event.detail?.active && then) location.href = then; });
   $('gate-form').addEventListener('submit', event => {
     if ($('gate-code').value !== '013') { event.preventDefault(); $('gate-error').hidden = false; $('gate-code').select(); return; }
     T.setTherapist(true); drawToday(); const then = after; after = null; if (then) location.href = then;

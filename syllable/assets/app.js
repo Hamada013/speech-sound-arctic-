@@ -5,7 +5,7 @@ import { pictureURI } from './pictures.js';
 
 const Data = window.ArticulationData, Plan = window.ArticulationPlan, Report = window.ArticulationReport, Sound = window.SyllableAudio;
 const { positions, sounds, soundById, positionName } = Data;
-const KEY = 'articulation-syllables-children-v1', TEST_KEY = 'articulation-syllables-test-v1', PASSWORD = '013';
+const KEY = 'articulation-syllables-children-v1', TEST_KEY = 'articulation-therapist', PASSWORD = '013';
 const $ = id => document.getElementById(id);
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const blank = () => ({ attempts: [], goals: {}, played: {}, run: null });
@@ -31,7 +31,9 @@ window.ArticulationActive = active;
 const currentRun = () => active()?.progress.run || null;
 
 let testMode = false;
-try { testMode = localStorage.getItem(TEST_KEY) === 'on'; } catch {}
+try { testMode = localStorage.getItem(TEST_KEY) === 'on' || !!window.ArticulationClinic?.parents(); } catch {}
+/* One therapist switch for the whole app: the lock in the header (assets/clinic.js, assets/intervention.js). */
+window.addEventListener('voc-therapist-change', event => { testMode = !!event.detail?.active || !!window.ArticulationClinic?.parents(); drawHome(); });
 function setTestMode(on) { testMode = on; try { localStorage.setItem(TEST_KEY, on ? 'on' : 'off'); } catch { toast('تعذّر حفظ الإعداد على هذا الجهاز.'); } drawHome(); }
 
 function drawHome() {
@@ -240,7 +242,7 @@ async function arrive() {
 function closeType(type) {
   const child = active(), r = run(), list = soundById(r.sound).words[type], graded = list.filter(item => r.scores[item.id] !== undefined);
   if (!graded.length) return;
-  child.progress.attempts.push({ date: new Date().toISOString(), run: r.id, sound: r.sound, zone: type, scores: Object.fromEntries(graded.map(item => [item.id, r.scores[item.id]])) });
+  window.ArticulationClinic.keep(child.progress, { date: new Date().toISOString(), run: r.id, sound: r.sound, zone: type, scores: Object.fromEntries(graded.map(item => [item.id, r.scores[item.id]])) });
   graded.forEach(item => { delete r.scores[item.id]; });
 }
 $('go').onclick = async () => {

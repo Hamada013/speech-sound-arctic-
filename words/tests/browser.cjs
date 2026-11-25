@@ -67,6 +67,9 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error' && !/favicon|Failed to load resource/.test(message.text())) errors.push(message.text()); });
   page.on('response', response => { if (/\.m4a/.test(response.url())) requested.push(response.url()); });
+  // A therapist's device: the clinic start screen (assets/speech-entry.js) is passed; the clinic database stays out.
+  await context.route(/gstatic\.com\/firebasejs\//, route => route.abort());
+  await context.addInitScript(() => { if (!localStorage.getItem('speech-entry-v1')) localStorage.setItem('speech-entry-v1', JSON.stringify({ mode: 'therapist' })); });
   await page.goto(url);
 
   // Every sound has ten drawn words in each position, with no drawing used twice in one sound.
@@ -103,18 +106,20 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
   // First launch asks for an account with no parent gate.
   await page.waitForSelector('#accounts[open]');
   await page.fill('#child-name', 'سلمى');
-  await page.check('input[value=girl]', { force: true });
   await page.click('#account-form button[type=submit]');
+  // The game character is chosen once, in the game, with its own portraits (assets/clinic.js).
+  await page.click('#artic-character [data-kind=girl]');
+  await page.waitForLoadState('load'); await page.waitForSelector('#home:not([hidden])');
+  assert.equal(await page.evaluate(() => ArticulationChildren.active().character), 'girl');
   await shot(page, '01-home');
 
-  // The password protects the switch, and the therapist's icons appear only with it on.
+  // One therapist switch for the whole app: the header lock (013). The report and goals show only while it is open.
   assert.equal(await page.isVisible('#report-open'), false);
-  assert.equal(await page.isVisible('#goals-open'), true, 'parents can set goals without the therapist switch');
-  await page.click('#test-switch'); await pin(page, '999');
-  await page.waitForFunction(() => document.getElementById('pin-error').textContent);
-  await page.waitForTimeout(500);
-  assert.equal(await page.getAttribute('#test-switch', 'aria-checked'), 'false');
-  await page.click('#password [data-close]');
+  assert.equal(await page.isVisible('#goals-open'), false, 'goals are for the therapist');
+  await page.click('header [data-therapist]'); await page.fill('.voc-therapist[open] input', '999'); await page.click('.voc-therapist[open] button[type=submit]');
+  await page.waitForFunction(() => document.getElementById('voc-therapist-error')?.textContent);
+  assert.equal(await page.evaluate(() => localStorage.getItem('articulation-therapist')), null);
+  await page.click('.voc-therapist[open] [data-close]');
 
   // No report yet: Play shows the letters.
   await page.click('#play');
@@ -154,8 +159,8 @@ const run = page => page.evaluate(() => { const r = ArticulationActive().progres
 
   // Therapist on: the report and goals appear in the header, and the run continues after a reload.
   await page.click('#leave'); await page.waitForSelector('#home:not([hidden])');
-  await page.click('#test-switch'); await pin(page, '013');
-  await page.waitForFunction(() => document.getElementById('test-switch').getAttribute('aria-checked') === 'true');
+  await page.click('header [data-therapist]'); await page.fill('.voc-therapist[open] input', '013'); await page.click('.voc-therapist[open] button[type=submit]');
+  await page.waitForFunction(() => localStorage.getItem('articulation-therapist') === 'on');
   assert.equal(await page.isVisible('#report-open'), true); assert.equal(await page.isVisible('#goals-open'), true);
   await page.click('#report-open');
   assert.ok((await page.textContent('#report-body')).includes('لا توجد جلسات'), 'an empty report says so');

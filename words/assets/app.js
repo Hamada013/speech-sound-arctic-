@@ -2,7 +2,7 @@
 (() => {
   const Data = window.ArticulationData, Art = window.ArticulationArt, Sound = window.ArticulationAudio, Game = window.ArticulationGame, Plan = window.ArticulationPlan, Report = window.ArticulationReport, Scenes = window.ArticulationScenes;
   const { positions, sounds, soundById, positionName } = Data;
-  const KEY = 'articulation-words-children-v1', TEST_KEY = 'articulation-words-test-v1', PASSWORD = '013';
+  const KEY = 'articulation-words-children-v1', TEST_KEY = 'articulation-therapist', PASSWORD = '013';
   const $ = id => document.getElementById(id);
   const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const blank = () => ({ attempts: [], goals: {}, played: {}, lastScenario: null, run: null });
@@ -33,7 +33,9 @@
   const currentRun = () => active()?.progress.run || null;
 
   let testMode = false;
-  try { testMode = localStorage.getItem(TEST_KEY) === 'on'; } catch {}
+  try { testMode = localStorage.getItem(TEST_KEY) === 'on' || !!window.ArticulationClinic?.parents(); } catch {}
+  /* One therapist switch for the whole app: the lock in the header (assets/clinic.js, assets/intervention.js). */
+  window.addEventListener('voc-therapist-change', event => { testMode = !!event.detail?.active || !!window.ArticulationClinic?.parents(); drawHome(); });
   function setTestMode(on) {
     testMode = on;
     try { localStorage.setItem(TEST_KEY, on ? 'on' : 'off'); } catch { toast('تعذّر حفظ الإعداد على هذا الجهاز.'); }
@@ -253,7 +255,7 @@
   function zoneDone(position) {
     const child = active(), run = child.progress.run, list = soundById(run.sound).words[position], graded = list.filter(word => run.scores[word.art] !== undefined);
     if (graded.length) {
-      child.progress.attempts.push({ date: new Date().toISOString(), run: run.id, sound: run.sound, zone: position, scores: Object.fromEntries(graded.map(word => [word.art, run.scores[word.art]])) });
+      window.ArticulationClinic.keep(child.progress, { date: new Date().toISOString(), run: run.id, sound: run.sound, zone: position, scores: Object.fromEntries(graded.map(word => [word.art, run.scores[word.art]])) });
       graded.forEach(word => { delete run.scores[word.art]; });
       save();
     }

@@ -50,7 +50,32 @@ window.ArticulationToday = (() => {
     if (panel) show(panel, result);
     return result;
   }
-  function show(panel, { session, next }) {
+  /* The end of today's session: a new sticker for the album (stickers/), a soft rising chime made in the browser and a
+     small burst of dots (no dots with reduced motion). The album draws the sticker's word picture. */
+  function chime() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [1046.5, 1318.5, 1568].forEach((frequency, i) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain(), t = ctx.currentTime + i * 0.12;
+        osc.frequency.setValueAtTime(frequency, t); gain.gain.setValueAtTime(0.0001, t); gain.gain.exponentialRampToValueAtTime(0.08, t + 0.012); gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+        osc.connect(gain).connect(ctx.destination); osc.start(t); osc.stop(t + 0.5);
+      });
+    } catch {}
+  }
+  function sticker(panel, item) {
+    const box = document.createElement('div'); box.className = 'today-sticker'; box.setAttribute('role', 'status');
+    box.innerHTML = `<span class="today-sticker-badge" dir="rtl">${item.letter || svg('star')}</span><b>ملصق جديد في ألبومك!</b>`;
+    panel.insertBefore(box, panel.firstChild); chime();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const badge = box.querySelector('.today-sticker-badge');
+    ['#f59e0b', '#22c55e', '#38bdf8', '#f472b6', '#a78bfa', '#facc15', '#fb7185', '#34d399'].forEach((colour, i) => {
+      const dot = document.createElement('i'), angle = i / 8 * Math.PI * 2; dot.style.background = colour; badge.append(dot);
+      dot.animate([{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(angle) * 60}px), calc(-50% + ${Math.sin(angle) * 60}px)) scale(1)`, opacity: 0 }], { duration: 700, easing: 'cubic-bezier(0.2, 0, 0, 1)', fill: 'forwards' });
+    });
+  }
+  function show(panel, { session, next, sticker: item }) {
+    panel.querySelector('.today-sticker')?.remove();
+    if (item) sticker(panel, item);
     const strip = document.createElement('div'), count = session.activities.filter(a => a.done).length;
     strip.className = 'today-strip';
     strip.innerHTML = `<div class="today-stars" role="img" aria-label="تدريب اليوم: ${count} من ${session.activities.length}">${session.activities.map(a => `<i class="${a.done ? 'on' : ''}">${svg('star')}</i>`).join('')}</div>`;

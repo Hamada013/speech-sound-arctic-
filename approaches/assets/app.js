@@ -8,7 +8,7 @@
   const Data = window.ArticulationData, A = window.ApproachData, W = window.WordsData, Plan = window.ArticulationPlan, Report = window.ArticulationReport;
   const Sound = window.PhraseAudio, Pictures = window.ApproachPictures, Children = window.ArticulationChildren;
   const { positions, sounds, soundById, positionName } = Data;
-  const KEY = 'articulation-approaches-children-v1', TEST_KEY = 'articulation-approaches-test-v1', PASSWORD = '013', TURNS = 5, WEEK = 7 * 864e5;
+  const KEY = 'articulation-approaches-children-v1', TEST_KEY = 'articulation-therapist', PASSWORD = '013', TURNS = 5, WEEK = 7 * 864e5;
   const $ = id => document.getElementById(id);
   const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(resolve => setTimeout(resolve, calm() ? 0 : ms));
@@ -42,6 +42,8 @@
 
   let testMode = false;
   try { testMode = localStorage.getItem(TEST_KEY) === 'on'; } catch {}
+  /* One therapist switch for the whole app: the lock in the header (assets/clinic.js, assets/intervention.js). */
+  window.addEventListener('voc-therapist-change', event => { testMode = !!event.detail?.active; drawHome(); });
   function setTestMode(on) { testMode = on; try { localStorage.setItem(TEST_KEY, on ? 'on' : 'off'); } catch { toast('تعذّر حفظ الإعداد على هذا الجهاز.'); } drawHome(); }
   function drawHome() {
     const child = active();
