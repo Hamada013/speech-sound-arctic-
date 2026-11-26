@@ -34,7 +34,19 @@
 @media (orientation:portrait){.viewer-panes.two{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}}
 .viewer-pane{position:relative;min-width:0;min-height:0}
 .viewer-video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;border-radius:22px;background:#fff}
-.viewer-camera{transform:scaleX(-1);object-fit:cover;background:#f3ead8;border:3px solid var(--ink)}
+.viewer-camera{transform:scaleX(-1);object-fit:contain;background:#f3ead8;border:3px solid var(--ink)}
+/* A phone held sideways (2026-11-26): little height, so the title shrinks and the view buttons stand in a column at the
+   side; the pictures get the full height. The camera shows its whole picture (contain), never a zoomed-in crop. */
+@media (orientation:landscape) and (max-height:540px){
+.viewer{padding:max(6px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.viewer-card{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto;gap:6px 10px;width:100%;height:100%;padding:6px 10px 8px;border-radius:22px}
+.viewer-head{grid-column:1/-1}.viewer-title{font-size:1.35rem}
+.viewer-head .round{width:44px;height:44px}
+.viewer-panes{grid-column:1;grid-row:2/4;height:100%;gap:8px}
+.viewer-modes{grid-column:2;grid-row:2;flex-direction:column;flex-wrap:nowrap;justify-content:center;gap:8px}
+.viewer-modes button{width:56px;height:48px;border-radius:14px}.viewer-modes button svg{width:26px;height:26px}
+.viewer-status{grid-column:2;grid-row:3;max-width:120px;font-size:.8rem}
+.viewer-video{border-radius:16px}}
 .viewer-modes{flex:none;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .viewer-modes button{display:grid;place-items:center;width:62px;height:56px;border:3px solid var(--ink);border-radius:18px;background:var(--cream);color:var(--ink)}
 .viewer-modes button svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
