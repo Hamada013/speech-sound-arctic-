@@ -20,7 +20,7 @@ const media = walk('sounds').filter(file => /\/\d+\.m4a$/.test(file)).sort().map
 // The account list and windows are shared with the home page and the other apps, one folder up.
 // The clinic link, the plan window, game feel and the Cairo font (2026-11) are shared files too.
 const shared = ['children.js', 'accounts.js', 'accounts.css', 'parent-gate.js', 'parent-gate.css', 'therapy.js', 'today.js', 'today.css', 'nav.js', 'nav.css',
-  'results.js', 'clinic.js', 'clinic.css', 'intervention-goals.js', 'intervention.js', 'intervention.css', 'child-file.js', 'speech-sync.js', 'speech-entry.js', 'feel.js', 'feel.css',
+  'results.js', 'clinic.js', 'clinic.css', 'intervention-goals.js', 'intervention.js', 'intervention.css', 'speech-sync.js', 'speech-entry.js', 'feel.js', 'feel.css',
   'vendor/cairo.css', 'vendor/cairo-arabic-wght-normal.woff2', 'vendor/cairo-latin-wght-normal.woff2', 'vendor/cairo-latin-ext-wght-normal.woff2', 'vendor/jspdf.umd.min.js'].map(file => `../assets/${file}`);
 const files = ['index.html', 'manifest.json', ...shared, ...walk('assets').filter(file => !/^assets\/release(?:-worker)?\.js$/.test(file) && mime[path.extname(file)]), ...walk('icons')].sort();
 const shell = files.map(entry), version = hash(JSON.stringify({ id, shell, media }) + hash(fs.readFileSync(path.join(root, 'sw.js')))).slice(0, 20);
