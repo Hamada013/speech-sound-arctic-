@@ -334,6 +334,17 @@ async function showView(next) {
   panes.replaceChildren(...nodes.map(node => { const pane = document.createElement('div'); pane.className = 'viewer-pane'; pane.append(node); return pane; }));
   const videos = nodes.filter(node => node.src);
   await Promise.all(videos.map(node => node.play().catch(() => {})));
+  if (videos.length > 1) together(videos[0], videos[1]);
+}
+/* Front and side together: the side view follows the front one (it carries the sound), so both start from the
+   beginning at once and the side is pulled back into step whenever it drifts, also after each loop. */
+function together(lead, follow) {
+  if (!lead.isConnected) return;
+  const align = () => { if (Math.abs(follow.currentTime - lead.currentTime) > 0.06) follow.currentTime = lead.currentTime; };
+  lead.addEventListener('timeupdate', align); lead.addEventListener('seeked', align);
+  lead.addEventListener('play', () => { align(); follow.play().catch(() => {}); });
+  lead.addEventListener('pause', () => follow.pause());
+  lead.currentTime = 0; follow.currentTime = 0;
 }
 function openViewer(item) {
   if (!hasVideo(item.id)) { toast('رسم الفم لهذا المقطع غير جاهز بعد.'); return; }
