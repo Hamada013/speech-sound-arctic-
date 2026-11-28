@@ -4,9 +4,11 @@
 // Run after adding or changing files: node scripts/build-offline.cjs   (--check fails when the list is out of date)
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
 const root = path.resolve(__dirname, '..'), out = path.join(root, 'offline-release.js');
+/* The word drawings' bundle is part of the app: rebuild it first (or, with --check, fail when it is stale). */
+console.log(require('./build-art-bundle.cjs').build(process.argv.includes('--check')));
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'docs', 'scripts', 'tests', '.claude']);
 const SKIP_EXT = new Set(['.md', '.cjs', '.txt', '.map', '.DS_Store']);
-const MEDIA_EXT = new Set(['.m4a', '.mp4', '.mp3', '.wav', '.webm']);
+const MEDIA_EXT = new Set(['.m4a', '.mp4', '.wav', '.webm']); // mp3 is not used by the app (source recordings stay out)
 const SHELL_EXT = new Set(['.html', '.js', '.mjs', '.css', '.svg', '.png', '.webp', '.jpg', '.jpeg', '.json', '.webmanifest', '.ico', '.woff2']);
 function walk(dir, list = []) {
   for (const name of fs.readdirSync(dir).sort()) {

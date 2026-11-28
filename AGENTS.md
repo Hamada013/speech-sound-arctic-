@@ -14,7 +14,7 @@ This repository holds the articulation apps by Ahmad Ghanem. It must never link 
 - `phrases/` (العبارات): the tower of phrase bricks. See `phrases/README.md`; its pictures are composed from the words part's drawings.
 - `syllable/`: the syllable train, the earlier practice and test screens (`classic.html`, `matching.html`) and the mouth animation library. See `syllable/README.md`.
 
-The whole app works offline through `sw.js` and `offline-release.js`: after adding or changing any file, run `node scripts/build-offline.cjs` (and the words or test PWA build when their files change).
+The whole app works offline through `sw.js` and `offline-release.js`: after adding or changing any file, run `node scripts/build-offline.cjs` (and the words or test PWA build when their files change). That script also rebuilds `words/assets/art-bundle.js`, the word drawings in one file for every page that shows them: edit the separate `art-*.js` files, never the bundle. `node scripts/recordings-pdf.cjs` writes `docs/recordings.pdf`, every recording with its file name and text.
 
 After a change, check only what changed; run the full play-through only when asked. Commit or push only when asked.
 

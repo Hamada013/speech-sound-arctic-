@@ -39,6 +39,12 @@ The repository must never link to or depend on the main speech website. Links on
 - **Sticker album** (`stickers/`): finishing today's session gives one sticker (`award` in `therapy.js`), drawn as a word picture with the session's sound; the session's end shows it with a chime and dots (`today.js`).
 - **Game feel** (`assets/feel.js`, `feel.css`): a soft chime on every grade (never a buzzer), dots at the button, the word picture or the train's driver hops on a right answer, a bigger burst after three in a row, the star bar pops, and the word card rises in. Only the sounds stay with reduced motion.
 
+## Done 2026-11-28
+
+- **Approaches recordings:** the therapist's one long recording was cut at the silences into `approaches/sounds/1.m4a` … `203.m4a` (203 of 203; the long pauses matched the list's section starts), levelled to the other parts.
+- **Speed on slow phones:** the logo is 15 KB instead of 111 KB; the word drawings load as one file (`words/assets/art-bundle.js`, built with the offline list) instead of thirty, so الكلمات, العبارات, الجمل, القصص and المناهج load about 40% faster; the test's welcome plays in full only on the first opening of the day.
+- **Recording sheet:** `docs/recordings.pdf` (`node scripts/recordings-pdf.cjs`).
+
 ## Rules for every part
 
 - **Graphs first, few words.** Every report and result screen shows the data as charts: a ring or pie for right, partial and wrong; bars per source, sound or level; a colour grid for sounds by level; lines for progress. Text is short labels; tables only as a collapsed detail. Source and level colours stay fixed wherever they appear.

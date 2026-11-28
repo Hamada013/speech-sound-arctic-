@@ -97,4 +97,6 @@ $('openSoundNav').onclick=()=>{updateCoverage();openDialog($('soundNavDialog'));
 document.querySelector('.app-brand').onclick=event=>{event.preventDefault();showPage('home');};
 initializeCases();renderMeta();renderTrials();installIconControls();showPage('home');
 $('launchHello').textContent=activeChild()?'مرحباً '+activeChild().name:'مرحباً';
-setTimeout(()=>{$('welcomeLaunch').hidden=true;window.dispatchEvent(new Event('articulation-launch-complete'));},matchMedia('(prefers-reduced-motion: reduce)').matches?100:1800);
+/* The welcome plays in full on the first opening of the day; later the same day it is brief. */
+const launchDay=new Date().toDateString(),launchSeen=(()=>{try{const seen=localStorage.getItem('articulation-test-welcome-day')===launchDay;localStorage.setItem('articulation-test-welcome-day',launchDay);return seen;}catch{return false;}})();
+setTimeout(()=>{$('welcomeLaunch').hidden=true;window.dispatchEvent(new Event('articulation-launch-complete'));},matchMedia('(prefers-reduced-motion: reduce)').matches?100:launchSeen?350:1800);
